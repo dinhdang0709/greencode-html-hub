@@ -1,0 +1,2722 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>OCEAN INFINITY – BIỂN VÔ CỰC | Ultra-Realistic Next-Gen 3D Ocean Simulation</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
+    body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #020812; font-family: 'Inter', sans-serif; color: #f1f5f9; }
+    .font-mono-num { font-family: 'JetBrains Mono', monospace; }
+    #game-canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 1; transition: filter 0.35s ease; }
+    .glass-panel {
+      background: rgba(5, 15, 28, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      box-shadow: 0 16px 40px -6px rgba(0, 0, 0, 0.75);
+    }
+    .glass-hud {
+      background: rgba(3, 12, 24, 0.68);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+    .cinematic-vignette {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 58%, rgba(2, 8, 18, 0.55) 100%);
+    }
+    .lens-flare-overlay {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      background: radial-gradient(circle at var(--sun-x, 50%) var(--sun-y, 25%), rgba(254, 243, 199, 0.18) 0%, rgba(56, 189, 248, 0.06) 22%, rgba(0, 0, 0, 0) 52%);
+      mix-blend-mode: screen;
+      transition: opacity 0.3s ease;
+    }
+    .underwater-vignette {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      background:
+        radial-gradient(circle at center, rgba(6, 95, 135, 0.18) 30%, rgba(2, 22, 42, 0.82) 100%),
+        repeating-linear-gradient(112deg, rgba(125, 211, 252, 0.04) 0px, rgba(125, 211, 252, 0.0) 40px, rgba(56, 189, 248, 0.06) 80px);
+      opacity: 0;
+      transition: opacity 0.45s ease;
+    }
+    .storm-rain-overlay {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 4;
+      background-image: linear-gradient(105deg, rgba(186, 230, 253, 0) 0%, rgba(186, 230, 253, 0.22) 50%, rgba(186, 230, 253, 0) 100%);
+      background-size: 2px 38px;
+      opacity: 0;
+      animation: rainSlide 0.22s linear infinite;
+    }
+    @keyframes rainSlide {
+      0% { background-position: 0 0; }
+      100% { background-position: -14px 38px; }
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+    ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.4); border-radius: 3px; }
+  </style>
+</head>
+<body class="relative w-full h-full overflow-hidden">
+
+  <!-- 3D WebGL Canvas -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- Next-Gen Post-Processing & Environmental Overlays -->
+  <div id="cinematic-vignette" class="cinematic-vignette"></div>
+  <div id="lens-flare-overlay" class="lens-flare-overlay"></div>
+  <div id="underwater-overlay" class="underwater-vignette"></div>
+  <div id="rain-overlay" class="storm-rain-overlay"></div>
+
+  <!-- Toast Notification -->
+  <div id="toast-container" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-1.5 pointer-events-none"></div>
+
+  <!-- TOP HUD BAR -->
+  <header class="fixed top-0 left-0 right-0 z-20 px-3 py-2 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+    <!-- Brand & FPS / Biome Badge -->
+    <div class="flex items-center gap-2 pointer-events-auto">
+      <button id="btn-open-menu" class="glass-hud px-3 py-1.5 rounded-lg flex items-center gap-2 hover:border-sky-400/50 transition text-xs font-bold tracking-wider text-sky-300">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>OCEAN INFINITY</span>
+        <span class="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/25 text-sky-200 font-mono-num">v12.0</span>
+      </button>
+
+      <div class="glass-hud px-2.5 py-1.5 rounded-lg flex items-center gap-3 text-xs">
+        <div class="flex items-center gap-1">
+          <span class="text-slate-400">FPS:</span>
+          <span id="hud-fps" class="font-mono-num font-bold text-emerald-400">60</span>
+        </div>
+        <span class="text-slate-600">|</span>
+        <div class="flex items-center gap-1">
+          <span class="text-slate-400">Vùng:</span>
+          <span id="hud-biome" class="font-semibold text-amber-300">Cảng Bình Minh</span>
+        </div>
+        <span class="text-slate-600 hidden sm:inline">|</span>
+        <div class="hidden sm:flex items-center gap-1">
+          <span class="text-slate-400">Thời tiết:</span>
+          <span id="hud-weather-label" class="font-semibold text-sky-300">Trời Nắng</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compass & Coordinates -->
+    <div class="glass-hud px-3 py-1.5 rounded-lg flex items-center gap-3 text-xs pointer-events-auto">
+      <div class="flex items-center gap-1.5">
+        <span class="text-slate-400">La bàn:</span>
+        <span id="hud-compass" class="font-mono-num font-bold text-sky-300">000° B (N)</span>
+      </div>
+      <span class="text-slate-600">|</span>
+      <div class="flex items-center gap-1.5 font-mono-num text-[11px]">
+        <span class="text-slate-400">Tọa độ:</span>
+        <span id="hud-coords" class="text-slate-200">X: 0, Z: 0</span>
+      </div>
+      <span class="text-slate-600 hidden md:inline">|</span>
+      <div class="hidden md:flex items-center gap-1.5 font-mono-num text-[11px]">
+        <span class="text-slate-400">Giờ:</span>
+        <span id="hud-time" class="text-amber-200">09:30</span>
+      </div>
+    </div>
+
+    <!-- Quick Action Toolbar -->
+    <div class="flex items-center gap-1.5 pointer-events-auto">
+      <button id="btn-mode-dive" class="glass-hud px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-sky-500/20 hover:border-sky-400/50 transition flex items-center gap-1" title="Chuyển chế độ Lái Tàu / Lặn Biển (Phím C)">
+        <span>🤿</span><span id="label-dive-mode" class="hidden sm:inline">Lặn Biển</span>
+      </button>
+      <button id="btn-toggle-fish" class="glass-hud px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-500/20 hover:border-emerald-400/50 transition flex items-center gap-1" title="Thả câu cá (Phím F)">
+        <span>🎣</span><span class="hidden sm:inline">Câu Cá</span>
+      </button>
+      <button id="btn-open-map" class="glass-hud px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-sky-500/20 hover:border-sky-400/50 transition flex items-center gap-1" title="Bản đồ Radar & Dịch chuyển (Phím M)">
+        <span>🗺️</span><span class="hidden sm:inline">Bản Đồ</span>
+      </button>
+      <button id="btn-open-inventory" class="glass-hud px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-amber-500/20 hover:border-amber-400/50 transition flex items-center gap-1" title="Kho đồ, Cửa hàng & Nâng cấp (Phím I)">
+        <span>🎒</span><span class="hidden sm:inline">Kho & Cảng</span>
+        <span id="hud-credits" class="font-mono-num text-amber-300 font-bold ml-0.5">500$</span>
+      </button>
+      <button id="btn-open-journal" class="glass-hud px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-purple-500/20 hover:border-purple-400/50 transition flex items-center gap-1" title="Nhật ký khám phá & Kiến trúc (Phím J)">
+        <span>📘</span><span class="hidden sm:inline">Nhật Ký</span>
+      </button>
+      <button id="btn-toggle-audio" class="glass-hud px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-sky-500/20 transition" title="Bật/Tắt Âm thanh Môi trường & Động cơ">
+        <span id="icon-audio">🔊</span>
+      </button>
+      <button id="btn-open-settings" class="glass-hud px-2.5 py-1.5 rounded-lg text-xs font-medium hover:bg-sky-500/20 border-sky-400/40 transition flex items-center gap-1" title="Cài đặt Đồ họa Siêu Thực & Thời tiết">
+        <span>⚙️</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- INTERACTION PROMPT BANNER (Dynamic context action) -->
+  <div id="context-action-bar" class="fixed top-14 left-1/2 -translate-x-1/2 z-20 hidden pointer-events-auto">
+    <button id="btn-context-action" class="glass-panel px-4 py-2 rounded-full text-xs font-semibold text-amber-300 border border-amber-400/40 hover:bg-amber-500/20 transition flex items-center gap-2 shadow-lg">
+      <span id="context-action-text">Nhấn [E] hoặc chạm để thu thập Kho Báu</span>
+    </button>
+  </div>
+
+  <!-- FISHING MINI-GAME OVERLAY -->
+  <div id="fishing-panel" class="fixed top-24 left-1/2 -translate-x-1/2 z-30 glass-panel p-4 rounded-xl w-80 max-w-[92vw] hidden pointer-events-auto">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
+        <span>🎣 Hệ Thống Câu Cá Đại Dương</span>
+      </h3>
+      <button id="btn-close-fishing" class="text-slate-400 hover:text-white text-xs px-1.5 py-0.5 rounded">✕</button>
+    </div>
+    <p id="fishing-status" class="text-xs text-slate-300 mb-3">Đang thả phao... Chờ cá cắn câu hoặc nhấn kéo cần đúng vùng xanh!</p>
+    <div class="relative w-full h-5 bg-slate-900/90 rounded-full overflow-hidden border border-slate-700 mb-3">
+      <div id="fishing-sweet-spot" class="absolute top-0 bottom-0 bg-emerald-500/40 border-x border-emerald-400" style="left: 35%; width: 28%;"></div>
+      <div id="fishing-cursor" class="absolute top-0 bottom-0 w-2.5 bg-amber-400 rounded-full shadow" style="left: 10%;"></div>
+    </div>
+    <div class="flex items-center justify-between gap-2">
+      <button id="btn-cast-reel" class="flex-1 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition">
+        Giật Cần / Thu Dây (Space)
+      </button>
+    </div>
+  </div>
+
+  <!-- BOTTOM HUD: TELEMETRY, WAVE METER, CONTROLS -->
+  <footer class="fixed bottom-0 left-0 right-0 z-20 p-3 flex flex-wrap items-end justify-between gap-2 pointer-events-none">
+    <!-- Left: Boat / Diver Telemetry -->
+    <div class="glass-hud p-3 rounded-xl w-64 max-w-[46vw] pointer-events-auto">
+      <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+        <span id="telemetry-mode-title" class="font-bold text-sky-300 uppercase">🚢 Tàu Thám Hiểm Cấp 1</span>
+        <span id="hud-depth" class="font-mono-num text-cyan-300">Độ sâu: 0.0m</span>
+      </div>
+
+      <!-- Speed & RPM -->
+      <div class="flex items-baseline justify-between mb-2">
+        <div>
+          <span id="hud-speed" class="font-mono-num text-2xl font-extrabold text-white">0.0</span>
+          <span class="text-[11px] text-slate-400 ml-1">hải lý (kts)</span>
+        </div>
+        <div class="text-right text-[11px] font-mono-num text-slate-300">
+          <span>Sóng: </span><span id="hud-wave-height" class="text-sky-300">1.2m</span>
+        </div>
+      </div>
+
+      <!-- Fuel Bar -->
+      <div class="mb-1.5">
+        <div class="flex justify-between text-[10px] text-slate-400 mb-0.5">
+          <span>Nhiên liệu</span>
+          <span id="hud-fuel-text" class="font-mono-num text-emerald-300">100%</span>
+        </div>
+        <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+          <div id="hud-fuel-bar" class="h-full bg-gradient-to-r from-emerald-500 to-sky-400 transition-all" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <!-- Hull / Oxygen Bar -->
+      <div>
+        <div class="flex justify-between text-[10px] text-slate-400 mb-0.5">
+          <span id="hud-hull-label">Độ bền thân tàu</span>
+          <span id="hud-hull-text" class="font-mono-num text-sky-300">100%</span>
+        </div>
+        <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+          <div id="hud-hull-bar" class="h-full bg-gradient-to-r from-sky-500 to-indigo-400 transition-all" style="width: 100%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center: On-Screen Touch / Mouse Controls + Camera Controls -->
+    <div class="flex flex-col items-center gap-1.5 pointer-events-auto">
+      <div class="glass-hud px-2.5 py-1 rounded-lg flex items-center gap-2 text-[11px] text-slate-300">
+        <span>WASD / Phím mũi tên: Lái tàu</span>
+        <span class="text-slate-600">•</span>
+        <span>Kéo chuột: Xoay camera</span>
+        <span class="text-slate-600 hidden sm:inline">•</span>
+        <button id="btn-refuel-quick" class="text-amber-300 hover:underline font-medium">Nạp nhiên liệu nhanh</button>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <button id="ctrl-left" class="glass-hud w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold active:bg-sky-500/40">◀</button>
+        <div class="flex flex-col gap-1">
+          <button id="ctrl-up" class="glass-hud w-10 h-9 rounded-lg flex items-center justify-center text-xs font-bold active:bg-sky-500/40">▲</button>
+          <button id="ctrl-down" class="glass-hud w-10 h-9 rounded-lg flex items-center justify-center text-xs font-bold active:bg-sky-500/40">▼</button>
+        </div>
+        <button id="ctrl-right" class="glass-hud w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold active:bg-sky-500/40">▶</button>
+        <button id="ctrl-brake" class="glass-hud px-3 h-10 rounded-lg flex items-center justify-center text-xs font-semibold text-amber-300 active:bg-amber-500/30" title="Neo tàu / Phanh (Space)">NEO</button>
+      </div>
+    </div>
+
+    <!-- Right: Mini-Radar & Weather Quick Switch -->
+    <div class="glass-hud p-2.5 rounded-xl flex items-center gap-2.5 pointer-events-auto">
+      <div class="relative w-20 h-20 rounded-full bg-slate-950/90 border border-sky-500/40 overflow-hidden flex items-center justify-center">
+        <canvas id="minimap-canvas" width="80" height="80" class="w-full h-full"></canvas>
+      </div>
+      <div class="flex flex-col gap-1 text-[11px]">
+        <div class="font-bold text-sky-300">Khí Quyển & Ánh Sáng</div>
+        <select id="select-weather-quick" class="bg-slate-900/90 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-sky-400">
+          <option value="sunny">☀️ Trời Nắng Rực Rỡ</option>
+          <option value="dawn">🌅 Bình Minh Vàng</option>
+          <option value="sunset">🌇 Hoàng Hôn Điện Ảnh</option>
+          <option value="night">🌙 Đêm Sao & Cực Quang</option>
+          <option value="fog">🌫️ Sương Mù Khí Quyển</option>
+          <option value="storm">⛈️ Giông Bão & Sấm Chớp</option>
+          <option value="calm">🌊 Mặt Biển Pha Lê</option>
+        </select>
+        <button id="btn-build-outpost" class="mt-0.5 px-2 py-1 rounded bg-indigo-600/80 hover:bg-indigo-500 text-white text-[11px] font-medium transition">
+          🏗️ Xây Trạm Nghiên Cứu (300$)
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL 1: MAIN MENU / PAUSE SCREEN -->
+  <div id="modal-menu" class="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-panel max-w-2xl w-full rounded-2xl p-6 border border-sky-400/30 shadow-2xl">
+      <div class="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <span class="text-[11px] font-mono-num uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">ULTRA-REALISTIC GRAPHICS EDITION v12.5</span>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mt-2">OCEAN INFINITY – BIỂN VÔ CỰC</h1>
+          <p class="text-xs sm:text-sm text-slate-300 mt-1">Đồ họa Đại dương Thế hệ mới: Khí quyển Rayleigh-Mie, 8 Lớp Sóng Gerstner + Vi Gợn FBM, Bọt Sóng Voronoi, Vân Sáng Đáy Biển (Caustics) & Đổ Bóng PBR Thực</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5 text-xs">
+        <div class="p-3 rounded-xl bg-slate-900/70 border border-slate-800">
+          <div class="font-bold text-sky-300 mb-1">🌊 Shader Nước 8 Tầng + FBM</div>
+          <p class="text-slate-400 leading-relaxed">Kết hợp 8 sóng Gerstner vĩ mô với nhiễu vi bề mặt FBM 4-Octave, tán xạ ngọc lục bảo dưới đỉnh sóng (SSS) và bọt sóng Voronoi hữu cơ.</p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/70 border border-slate-800">
+          <div class="font-bold text-emerald-300 mb-1">☀️ Khí Quyển & Tia Nắng</div>
+          <p class="text-slate-400 leading-relaxed">Vòm trời tán xạ Rayleigh-Mie thời gian thực, mây 3D trôi, dải ngân hà & cực quang ban đêm, cùng tia sáng God Rays dưới đáy biển.</p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/70 border border-slate-800">
+          <div class="font-bold text-amber-300 mb-1">🚢 PBR & Hạt Bọt Nước Động</div>
+          <p class="text-slate-400 leading-relaxed">Đổ bóng mềm PCFSoftShadow, ca-bin tàu chi tiết cao, đèn pha nón sáng ban đêm và hệ thống hạt nước bắn tung tóe ở mũi tàu.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800">
+        <div class="flex items-center gap-2">
+          <button id="btn-save-game" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition">💾 Lưu Tiến Trình</button>
+          <button id="btn-reset-game" class="px-3 py-2 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-200 border border-rose-700/40 text-xs font-semibold transition">🔄 Đặt Lại Thế Giới</button>
+        </div>
+        <button id="btn-start-play" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-400 hover:from-sky-400 hover:to-cyan-300 text-slate-950 font-extrabold text-sm shadow-lg shadow-sky-500/25 transition">
+          ▶ BẮT ĐẦU KHÁM PHÁ ĐẠI DƯƠNG
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: WORLD MAP & FAST TRAVEL -->
+  <div id="modal-map" class="fixed inset-0 z-40 bg-slate-950/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-panel max-w-3xl w-full rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">🗺️ Bản Đồ Hải Đồ & Khu Vực Đại Dương</h2>
+          <p class="text-xs text-slate-400">Nhấp vào một vùng biển để đặt hoa tiêu hoặc dịch chuyển nhanh tàu thám hiểm</p>
+        </div>
+        <button id="btn-close-map" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs">Đóng (M)</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+        <div class="relative aspect-square w-full max-w-[320px] mx-auto bg-slate-950 rounded-xl border border-sky-500/30 overflow-hidden">
+          <canvas id="world-map-canvas" width="320" height="320" class="w-full h-full"></canvas>
+        </div>
+        <div id="biome-list-container" class="flex flex-col gap-2 max-h-80 overflow-y-auto pr-1"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: INVENTORY, SHOP & BOAT UPGRADES -->
+  <div id="modal-inventory" class="fixed inset-0 z-40 bg-slate-950/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-panel max-w-3xl w-full rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-lg font-bold text-white">🎒 Kho Lưu Trữ, Cảng Giao Dịch & Nâng Cấp Tàu</h2>
+          <p class="text-xs text-slate-400">Bán cá đánh bắt được, thu hồi cổ vật và nâng cấp động cơ, thân tàu, bình lặn</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 font-mono-num text-xs font-bold">
+            Ngân quỹ: <span id="inv-credits-val">500</span>$
+          </span>
+          <button id="btn-close-inventory" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs">Đóng (I)</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Left: Fish & Salvage Inventory -->
+        <div class="p-3.5 rounded-xl bg-slate-900/70 border border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-sky-300">Danh Mục Cá & Tài Nguyên</h3>
+              <button id="btn-sell-all" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">💰 Bán Tất Cả</button>
+            </div>
+            <div id="inventory-items-list" class="space-y-1.5 max-h-56 overflow-y-auto text-xs pr-1"></div>
+          </div>
+          <div class="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+            <span>Tổng cá đã câu: <strong id="stat-fish-caught" class="text-white">0</strong></span>
+            <span>Kho báu đã trục vớt: <strong id="stat-treasures" class="text-amber-300">0/6</strong></span>
+          </div>
+        </div>
+
+        <!-- Right: Ship & Base Upgrades -->
+        <div class="p-3.5 rounded-xl bg-slate-900/70 border border-slate-800 space-y-2.5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-amber-300">Xưởng Đóng Tàu & Thiết Bị</h3>
+          <div id="upgrades-list" class="space-y-2 text-xs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: ULTRA GRAPHICS, WEATHER & SHADER SETTINGS -->
+  <div id="modal-settings" class="fixed inset-0 z-40 bg-slate-950/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-panel max-w-2xl w-full rounded-2xl p-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-lg font-bold text-white">✨ Tùy Chỉnh Đồ Họa Siêu Thực (Ultra PBR & Shader Pipeline)</h2>
+          <p class="text-xs text-slate-400">Điều chỉnh trực tiếp thông số GLSL Ocean Shader, Tone Mapping, Caustics và Khí quyển</p>
+        </div>
+        <button id="btn-close-settings" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs">Đóng</button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1.5">Chế độ Thời tiết & Ánh sáng Điện ảnh</label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5" id="weather-preset-buttons">
+            <button data-weather="sunny" class="weather-btn px-2.5 py-1.5 rounded bg-sky-500/20 border border-sky-400 text-sky-200 font-medium">☀️ Trời Nắng</button>
+            <button data-weather="dawn" class="weather-btn px-2.5 py-1.5 rounded bg-slate-800 border border-slate-700 text-slate-300">🌅 Bình Minh</button>
+            <button data-weather="sunset" class="weather-btn px-2.5 py-1.5 rounded bg-slate-800 border border-slate-700 text-slate-300">🌇 Hoàng Hôn</button>
+            <button data-weather="night" class="weather-btn px-2.5 py-1.5 rounded bg-slate-800 border border-slate-700 text-slate-300">🌙 Ban Đêm</button>
+            <button data-weather="fog" class="weather-btn px-2.5 py-1.5 rounded bg-slate-800 border border-slate-700 text-slate-300">🌫️ Sương Mù</button>
+            <button data-weather="storm" class="weather-btn px-2.5 py-1.5 rounded bg-slate-800 border border-slate-700 text-slate-300">⛈️ Giông Bão</button>
+            <button data-weather="calm" class="weather-btn px-2.5 py-1.5 rounded bg-slate-800 border border-slate-700 text-slate-300">🌊 Biển Lặng</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800">
+          <div>
+            <label class="flex justify-between text-slate-300 mb-1">
+              <span>Cường độ Sóng Đại Dương (Wave Scale)</span>
+              <span id="label-wave-scale" class="font-mono-num text-sky-300">1.0x</span>
+            </label>
+            <input id="slider-wave-scale" type="range" min="0.2" max="2.5" step="0.05" value="1.0" class="w-full accent-sky-400" />
+          </div>
+          <div>
+            <label class="flex justify-between text-slate-300 mb-1">
+              <span>Độ sắc nét Gợn sóng (Choppiness)</span>
+              <span id="label-choppiness" class="font-mono-num text-cyan-300">1.15</span>
+            </label>
+            <input id="slider-choppiness" type="range" min="0.4" max="1.8" step="0.05" value="1.15" class="w-full accent-cyan-400" />
+          </div>
+          <div>
+            <label class="flex justify-between text-slate-300 mb-1">
+              <span>Tán xạ Ngọc lục bảo (Subsurface SSS)</span>
+              <span id="label-sss" class="font-mono-num text-emerald-300">1.25</span>
+            </label>
+            <input id="slider-sss" type="range" min="0.2" max="2.2" step="0.05" value="1.25" class="w-full accent-emerald-400" />
+          </div>
+          <div>
+            <label class="flex justify-between text-slate-300 mb-1">
+              <span>Mật độ Bọt sóng Voronoi (Foam)</span>
+              <span id="label-foam" class="font-mono-num text-sky-200">1.10</span>
+            </label>
+            <input id="slider-foam" type="range" min="0.0" max="2.0" step="0.05" value="1.10" class="w-full accent-sky-300" />
+          </div>
+          <div>
+            <label class="flex justify-between text-slate-300 mb-1">
+              <span>Phơi sáng Điện ảnh (HDR Exposure)</span>
+              <span id="label-exposure" class="font-mono-num text-amber-300">1.12</span>
+            </label>
+            <input id="slider-exposure" type="range" min="0.6" max="1.8" step="0.02" value="1.12" class="w-full accent-amber-400" />
+          </div>
+          <div>
+            <label class="flex justify-between text-slate-300 mb-1">
+              <span>Thời gian trong ngày (Giờ mặt trời)</span>
+              <span id="label-time-slider" class="font-mono-num text-amber-300">09:30</span>
+            </label>
+            <input id="slider-time" type="range" min="0" max="24" step="0.1" value="9.5" class="w-full accent-amber-400" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800">
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">Chất lượng Lưới Đại Dương & Đổ Bóng</label>
+            <select id="select-quality" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200">
+              <option value="extreme" selected>Siêu Cấp Extreme (220x220 Grid + Vi Gợn FBM + Bóng Đổ 2K)</option>
+              <option value="high">Cao (160x160 Grid + Phản xạ đầy đủ)</option>
+              <option value="medium">Tiêu chuẩn (120x120 Grid - Ưu tiên 60-90 FPS)</option>
+              <option value="low">Tối ưu FPS (72x72 Grid - Thiết bị di động)</option>
+            </select>
+          </div>
+          <div class="flex flex-col justify-center gap-1.5 pt-2">
+            <label class="inline-flex items-center gap-2 cursor-pointer">
+              <input id="toggle-auto-time" type="checkbox" checked class="accent-sky-400 rounded" />
+              <span class="text-slate-300">Chu kỳ Ngày/Đêm tự động trôi</span>
+            </label>
+            <label class="inline-flex items-center gap-2 cursor-pointer">
+              <input id="toggle-postfx" type="checkbox" checked class="accent-sky-400 rounded" />
+              <span class="text-slate-300">Hiệu ứng Hậu kỳ Điện ảnh (Bloom Glare & Color Grading)</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: EXPLORATION JOURNAL & ARCHITECTURE DOCS -->
+  <div id="modal-journal" class="fixed inset-0 z-40 bg-slate-950/75 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-panel max-w-3xl w-full rounded-2xl p-5 max-h-[88vh] flex flex-col">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-bold text-white">📘 Nhật Ký Thám Hiểm & Hồ Sơ Đồ Họa Siêu Thực v12.5</h2>
+        <button id="btn-close-journal" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs">Đóng (J)</button>
+      </div>
+      <div class="overflow-y-auto space-y-3 text-xs pr-1">
+        <div class="p-3 rounded-xl bg-slate-900/70 border border-slate-800">
+          <div class="font-bold text-sky-300 mb-1">Nhật Ký Khám Phá Các Vùng Biển</div>
+          <div id="journal-entries" class="space-y-1.5 text-slate-300"></div>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900/70 border border-slate-800 space-y-1.5 text-slate-300">
+          <div class="font-bold text-emerald-300">Nâng Cấp Đồ Họa Thế Hệ Mới (Next-Gen Visual Upgrade v12.5)</div>
+          <p>• <strong>8-Wave Gerstner + 4-Octave FBM Micro-Normal Map:</strong> Bổ sung nhiễu phân dạng (Fractional Brownian Motion) trực tiếp trong Fragment Shader để tạo hàng triệu gợn sóng nhỏ lấp lánh dưới nắng mà không làm nặng đỉnh hình học.</p>
+          <p>• <strong>Atmospheric Sky Dome & Horizon Blending:</strong> Vòm trời 3D tùy chỉnh mô phỏng tán xạ khí quyển Rayleigh/Mie, đĩa mặt trời rực sáng, hiệu ứng Cực quang (Aurora Borealis) và các vì sao lấp lánh vào ban đêm.</p>
+          <p>• <strong>Seabed Caustics & Volumetric God Rays:</strong> Đáy đại dương có shader vân sáng khúc xạ mặt nước (Caustics) chuyển động thời gian thực cùng các luồng tia nắng xuyên qua làn nước.</p>
+          <p>• <strong>Bow Spray & Dynamic Wake Trail:</strong> Hệ thống hạt bọt nước 3D bắn tung tóe từ mũi tàu và vệt bọt sóng kéo dài phía sau chân vịt theo tốc độ thực.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // ==========================================
+      // 1. WORLD BIOMES & CONFIGURATION
+      // ==========================================
+      const BIOMES = [
+        { id: 'harbor', name: 'Cảng Bình Minh & Làng Chài', x: 0, z: 0, radius: 140, depth: -18, color: '#38bdf8', desc: 'Cảng xuất phát an toàn với ngọn hải đăng chiếu sáng quay 360°, cầu cảng gỗ và xưởng tàu.' },
+        { id: 'tropical', name: 'Quần Đảo Nhiệt Đới Ngọc Lục Bảo', x: 260, z: -220, radius: 160, depth: -22, color: '#34d399', desc: 'Vùng nước nông trong vắt ánh ngọc bích, bãi cát trắng, rặng dừa và đàn cá heo nhảy sóng.' },
+        { id: 'coral', name: 'Rạn San Hô Ánh Dương', x: -240, z: -200, radius: 150, depth: -25, color: '#f472b6', desc: 'Hệ sinh thái san hô phát quang sinh học rực rỡ dưới đáy biển cùng tia nắng xuyên thấu.' },
+        { id: 'shipwreck', name: 'Nghĩa Địa Tàu Đắm Cổ Đại', x: -280, z: 240, radius: 150, depth: -34, color: '#fbbf24', desc: 'Xác tàu Galleon cổ đại nằm nghiêng giữa rạn đá, được canh giữ bởi đàn cá mập.' },
+        { id: 'arctic', name: 'Vùng Biển Băng Giá Phương Bắc', x: 290, z: 270, radius: 170, depth: -40, color: '#a5f3fc', desc: 'Những núi băng trôi phản chiếu ánh sáng lạnh giá và nơi sinh sống của cá voi lưng gù.' },
+        { id: 'abyss', name: 'Vực Thẳm Đại Dương Đen (Biển Nguy Hiểm)', x: 0, z: -460, radius: 180, depth: -65, color: '#818cf8', desc: 'Vùng biển sâu thẳm với sóng dữ dội và kho báu huyền thoại phát sáng dưới đáy vực.' }
+      ];
+
+      const FISH_CATALOG = [
+        { id: 'mackerel', name: 'Cá Thu Đại Dương', value: 45, rarity: 'Phổ biến', biome: 'harbor' },
+        { id: 'clownfish', name: 'Cá Hề Rạn San Hô', value: 75, rarity: 'Phổ biến', biome: 'coral' },
+        { id: 'tuna', name: 'Cá Ngừ Vây Xanh', value: 140, rarity: 'Hiếm', biome: 'tropical' },
+        { id: 'swordfish', name: 'Cá Kiếm Vượt Sóng', value: 220, rarity: 'Hiếm', biome: 'shipwreck' },
+        { id: 'icecod', name: 'Cá Tuyết Bắc Cực', value: 190, rarity: 'Hiếm', biome: 'arctic' },
+        { id: 'oarfish', name: 'Cá Mái Chèo Vực Thẳm', value: 420, rarity: 'Huyền thoại', biome: 'abyss' }
+      ];
+
+      const UPGRADE_CATALOG = [
+        { id: 'engine', name: 'Động Cơ Phản Lực Nước Twin-Turbine', baseCost: 250, desc: 'Tăng 25% tốc độ tối đa và lực kéo vượt sóng lớn.' },
+        { id: 'hull', name: 'Gia Cố Thân Tàu Hợp Kim Titan', baseCost: 220, desc: 'Giảm 30% sát thương va chạm đá ngầm & tăng ổn định sóng.' },
+        { id: 'tank', name: 'Bình Nhiên Liệu & Oxy Lặn Cao Áp', baseCost: 180, desc: 'Giảm 25% tiêu hao nhiên liệu và kéo dài thời gian lặn sâu.' },
+        { id: 'sonar', name: 'Hệ Thống Sonar Dò Cá & Kho Báu', baseCost: 300, desc: 'Tăng tỷ lệ câu được cá hiếm và mở rộng vùng thu thập cổ vật.' }
+      ];
+
+      // ==========================================
+      // 2. GAME STATE & PERSISTENCE
+      // ==========================================
+      const state = {
+        playing: false,
+        mode: 'boat', // 'boat' | 'dive'
+        weather: 'sunny',
+        waveScale: 1.0,
+        choppiness: 1.15,
+        sssIntensity: 1.25,
+        foamIntensity: 1.10,
+        exposure: 1.12,
+        postFx: true,
+        timeOfDay: 9.5, // 0..24
+        autoTime: true,
+        credits: 500,
+        fuel: 100,
+        hull: 100,
+        fishCaught: 0,
+        inventory: [],
+        upgrades: { engine: 1, hull: 1, tank: 1, sonar: 1 },
+        discoveredBiomes: ['harbor'],
+        collectedTreasures: [],
+        outposts: [],
+        boat: {
+          x: 0,
+          y: 0,
+          z: 35,
+          vx: 0,
+          vz: 0,
+          speed: 0,
+          heading: Math.PI,
+          angularVel: 0,
+          pitch: 0,
+          roll: 0,
+          throttle: 0,
+          anchored: false
+        },
+        diver: {
+          x: 0,
+          y: -4,
+          z: 35,
+          vy: 0
+        },
+        camera: {
+          yaw: 0,
+          pitch: 0.28,
+          distance: 25,
+          dragging: false,
+          lastX: 0,
+          lastY: 0
+        },
+        fishing: {
+          active: false,
+          cursor: 10,
+          dir: 1,
+          sweetStart: 35,
+          sweetWidth: 26
+        },
+        audio: {
+          enabled: false,
+          ctx: null,
+          engineOsc: null,
+          engineGain: null,
+          waveGain: null
+        }
+      };
+
+      function loadSavedState() {
+        try {
+          const raw = localStorage.getItem('ocean_infinity_save_v12');
+          if (!raw) return;
+          const saved = JSON.parse(raw);
+          if (typeof saved.credits === 'number') state.credits = saved.credits;
+          if (typeof saved.fishCaught === 'number') state.fishCaught = saved.fishCaught;
+          if (Array.isArray(saved.inventory)) state.inventory = saved.inventory;
+          if (saved.upgrades) Object.assign(state.upgrades, saved.upgrades);
+          if (Array.isArray(saved.discoveredBiomes)) state.discoveredBiomes = saved.discoveredBiomes;
+          if (Array.isArray(saved.collectedTreasures)) state.collectedTreasures = saved.collectedTreasures;
+          if (Array.isArray(saved.outposts)) state.outposts = saved.outposts;
+        } catch (e) {}
+      }
+
+      function saveGameState() {
+        try {
+          const payload = {
+            credits: state.credits,
+            fishCaught: state.fishCaught,
+            inventory: state.inventory,
+            upgrades: state.upgrades,
+            discoveredBiomes: state.discoveredBiomes,
+            collectedTreasures: state.collectedTreasures,
+            outposts: state.outposts
+          };
+          localStorage.setItem('ocean_infinity_save_v12', JSON.stringify(payload));
+          showToast('💾 Đã lưu tiến trình khám phá đại dương!', 'emerald');
+        } catch (e) {
+          showToast('Đã lưu trạng thái trong phiên hiện tại.', 'sky');
+        }
+      }
+
+      function showToast(msg, tone) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const el = document.createElement('div');
+        const borderCol = tone === 'amber' ? 'border-amber-400/60 text-amber-200' :
+                          tone === 'emerald' ? 'border-emerald-400/60 text-emerald-200' :
+                          'border-sky-400/60 text-sky-200';
+        el.className = 'glass-panel px-4 py-1.5 rounded-full text-xs font-semibold border ' + borderCol + ' shadow-lg transition-opacity duration-300';
+        el.textContent = msg;
+        container.appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = '0';
+          setTimeout(() => el.remove(), 320);
+        }, 2800);
+      }
+
+      // ==========================================
+      // 3. PROCEDURAL WEB AUDIO SYNTHESIZER
+      // ==========================================
+      function initAudio() {
+        if (state.audio.ctx) return;
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          const ctx = new AudioCtx();
+          state.audio.ctx = ctx;
+
+          const bufferSize = ctx.sampleRate * 3;
+          const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const output = noiseBuffer.getChannelData(0);
+          let lastOut = 0.0;
+          for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            output[i] = (lastOut + (0.02 * white)) / 1.02;
+            lastOut = output[i];
+            output[i] *= 2.2;
+          }
+          const whiteNoise = ctx.createBufferSource();
+          whiteNoise.buffer = noiseBuffer;
+          whiteNoise.loop = true;
+
+          const waveFilter = ctx.createBiquadFilter();
+          waveFilter.type = 'lowpass';
+          waveFilter.frequency.value = 380;
+
+          const waveGain = ctx.createGain();
+          waveGain.gain.value = 0.14;
+
+          whiteNoise.connect(waveFilter);
+          waveFilter.connect(waveGain);
+          waveGain.connect(ctx.destination);
+          whiteNoise.start(0);
+
+          const osc = ctx.createOscillator();
+          osc.type = 'sawtooth';
+          osc.frequency.value = 44;
+
+          const engFilter = ctx.createBiquadFilter();
+          engFilter.type = 'lowpass';
+          engFilter.frequency.value = 160;
+
+          const engGain = ctx.createGain();
+          engGain.gain.value = 0.02;
+
+          osc.connect(engFilter);
+          engFilter.connect(engGain);
+          engGain.connect(ctx.destination);
+          osc.start(0);
+
+          state.audio.engineOsc = osc;
+          state.audio.engineGain = engGain;
+          state.audio.waveGain = waveGain;
+          state.audio.enabled = true;
+          document.getElementById('icon-audio').textContent = '🔊';
+        } catch (err) {
+          state.audio.enabled = false;
+        }
+      }
+
+      function toggleAudio() {
+        if (!state.audio.ctx) {
+          initAudio();
+          showToast('🔊 Đã bật âm thanh sóng đại dương & động cơ tàu', 'sky');
+          return;
+        }
+        state.audio.enabled = !state.audio.enabled;
+        if (state.audio.enabled) {
+          state.audio.ctx.resume();
+          document.getElementById('icon-audio').textContent = '🔊';
+          showToast('🔊 Đã bật âm thanh môi trường', 'sky');
+        } else {
+          state.audio.ctx.suspend();
+          document.getElementById('icon-audio').textContent = '🔇';
+          showToast('🔇 Đã tắt âm thanh', 'sky');
+        }
+      }
+
+      function playChime(freq, duration) {
+        if (!state.audio.enabled || !state.audio.ctx) return;
+        try {
+          const ctx = state.audio.ctx;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+          gain.gain.setValueAtTime(0.12, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + duration);
+        } catch (e) {}
+      }
+
+      // ==========================================
+      // 4. 8-LAYER GERSTNER WAVE MATHEMATICAL MODEL
+      // ==========================================
+      const WAVES = [
+        { amp: 0.78, len: 44.0, spd: 2.1, dx: 0.85, dz: 0.52 },
+        { amp: 0.52, len: 26.0, spd: 2.7, dx: -0.45, dz: 0.89 },
+        { amp: 0.34, len: 16.0, spd: 3.2, dx: 0.92, dz: -0.39 },
+        { amp: 0.21, len: 9.5,  spd: 4.0, dx: -0.70, dz: -0.71 },
+        { amp: 0.13, len: 5.4,  spd: 4.7, dx: 0.30, dz: 0.95 },
+        { amp: 0.08, len: 3.1,  spd: 5.4, dx: -0.88, dz: 0.47 },
+        { amp: 0.05, len: 1.8,  spd: 6.2, dx: 0.61, dz: -0.79 },
+        { amp: 0.03, len: 1.1,  spd: 7.0, dx: -0.25, dz: -0.96 }
+      ];
+
+      function sampleOceanHeight(x, z, time) {
+        const scale = state.waveScale;
+        let h = 0.0;
+        for (let i = 0; i < WAVES.length; i++) {
+          const w = WAVES[i];
+          const freq = 6.2831853 / w.len;
+          const phase = freq * (w.dx * x + w.dz * z) - w.spd * time;
+          h += (w.amp * scale) * Math.sin(phase);
+        }
+        return h;
+      }
+
+      // ==========================================
+      // 5. THREE.JS NEXT-GEN RENDERER, SKY DOME & OCEAN SHADER
+      // ==========================================
+      const canvas = document.getElementById('game-canvas');
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = state.exposure;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x06162e);
+      scene.fog = new THREE.FogExp2(0x78b7e8, 0.0011);
+
+      const camera = new THREE.PerspectiveCamera(56, window.innerWidth / window.innerHeight, 0.4, 2600);
+
+      // Lights with High-Res Shadows
+      const hemiLight = new THREE.HemisphereLight(0xe0f2fe, 0x082038, 0.9);
+      scene.add(hemiLight);
+
+      const sunLight = new THREE.DirectionalLight(0xfff5e0, 1.55);
+      sunLight.position.set(180, 240, -160);
+      sunLight.castShadow = true;
+      sunLight.shadow.mapSize.width = 2048;
+      sunLight.shadow.mapSize.height = 2048;
+      sunLight.shadow.camera.near = 10;
+      sunLight.shadow.camera.far = 750;
+      const d = 140;
+      sunLight.shadow.camera.left = -d;
+      sunLight.shadow.camera.right = d;
+      sunLight.shadow.camera.top = d;
+      sunLight.shadow.camera.bottom = -d;
+      sunLight.shadow.bias = -0.0005;
+      scene.add(sunLight);
+
+      // Lightning Flash Light for Storms
+      const lightningLight = new THREE.PointLight(0xdbeafe, 0, 1200);
+      lightningLight.position.set(0, 280, -120);
+      scene.add(lightningLight);
+
+      // 5.1 Atmospheric Rayleigh-Mie Sky Dome with Stars, Clouds & Aurora Borealis
+      const skyUniforms = {
+        uSunDir: { value: new THREE.Vector3(0.5, 0.7, -0.5).normalize() },
+        uZenithColor: { value: new THREE.Color(0x134e8a) },
+        uHorizonColor: { value: new THREE.Color(0x93c5fd) },
+        uSunColor: { value: new THREE.Color(0xfff1c2) },
+        uTime: { value: 0 },
+        uNightFactor: { value: 0.0 },
+        uCloudDensity: { value: 0.45 }
+      };
+
+      const skyVertexShader = `
+        varying vec3 vWorldPos;
+        void main() {
+          vec4 wp = modelMatrix * vec4(position, 1.0);
+          vWorldPos = wp.xyz;
+          gl_Position = projectionMatrix * viewMatrix * wp;
+        }
+      `;
+
+      const skyFragmentShader = `
+        uniform vec3 uSunDir;
+        uniform vec3 uZenithColor;
+        uniform vec3 uHorizonColor;
+        uniform vec3 uSunColor;
+        uniform float uTime;
+        uniform float uNightFactor;
+        uniform float uCloudDensity;
+        varying vec3 vWorldPos;
+
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        }
+
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          f = f * f * (3.0 - 2.0 * f);
+          float a = hash(i);
+          float b = hash(i + vec2(1.0, 0.0));
+          float c = hash(i + vec2(0.0, 1.0));
+          float d = hash(i + vec2(1.0, 1.0));
+          return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+        }
+
+        float fbm(vec2 p) {
+          float v = 0.0;
+          float a = 0.5;
+          for (int i = 0; i < 4; i++) {
+            v += a * noise(p);
+            p *= 2.03;
+            a *= 0.5;
+          }
+          return v;
+        }
+
+        void main() {
+          vec3 dir = normalize(vWorldPos - cameraPosition);
+          float y = clamp(dir.y, 0.0, 1.0);
+
+          // Rayleigh vertical sky gradient
+          vec3 sky = mix(uHorizonColor, uZenithColor, pow(y, 0.55));
+
+          // Mie Solar Halo & Sun Disc
+          float sunAmt = max(dot(dir, uSunDir), 0.0);
+          vec3 mieHalo = uSunColor * pow(sunAmt, 8.0) * 0.48;
+          float sunDisc = smoothstep(0.9982, 0.9996, sunAmt);
+          sky += mieHalo + uSunColor * sunDisc * 3.2;
+
+          // Volumetric Cloud Layer
+          if (dir.y > 0.02) {
+            vec2 cloudUV = dir.xz / (dir.y + 0.18) * 1.6 + vec2(uTime * 0.015, uTime * 0.008);
+            float cNoise = fbm(cloudUV);
+            float cloudMask = smoothstep(1.0 - uCloudDensity, 1.0, cNoise) * smoothstep(0.02, 0.22, dir.y);
+            vec3 cloudCol = mix(uHorizonColor * 1.15, uSunColor, pow(sunAmt, 3.0) * 0.6);
+            cloudCol = mix(cloudCol, vec3(0.12, 0.16, 0.24), uNightFactor * 0.8);
+            sky = mix(sky, cloudCol, cloudMask * 0.72);
+          }
+
+          // Night Stars & Aurora Borealis
+          if (uNightFactor > 0.05 && dir.y > 0.05) {
+            vec2 starCell = floor(dir.xz / (dir.y + 0.1) * 260.0);
+            float starVal = hash(starCell);
+            if (starVal > 0.994) {
+              float twinkle = 0.5 + 0.5 * sin(uTime * 5.0 + starVal * 100.0);
+              sky += vec3(0.9, 0.95, 1.0) * twinkle * uNightFactor * smoothstep(0.05, 0.35, dir.y);
+            }
+            // Northern Aurora Ribbons
+            float auroraWave = sin(dir.x * 6.0 + fbm(dir.xz * 3.0 + uTime * 0.15) * 5.0);
+            float auroraBand = smoothstep(0.65, 0.98, auroraWave) * smoothstep(0.12, 0.55, dir.y) * (1.0 - smoothstep(0.55, 0.85, dir.y));
+            vec3 auroraCol = mix(vec3(0.05, 0.85, 0.55), vec3(0.45, 0.25, 0.95), dir.x * 0.5 + 0.5);
+            sky += auroraCol * auroraBand * uNightFactor * 0.65;
+          }
+
+          gl_FragColor = vec4(sky, 1.0);
+        }
+      `;
+
+      const skyDome = new THREE.Mesh(
+        new THREE.SphereGeometry(1850, 40, 28),
+        new THREE.ShaderMaterial({
+          uniforms: skyUniforms,
+          vertexShader: skyVertexShader,
+          fragmentShader: skyFragmentShader,
+          side: THREE.BackSide,
+          depthWrite: false
+        })
+      );
+      scene.add(skyDome);
+
+      // 5.2 Ultra-Realistic 8-Wave + FBM Micro-Normal + Voronoi Foam GLSL Ocean Shader
+      const oceanUniforms = {
+        uTime: { value: 0 },
+        uWaveScale: { value: 1.0 },
+        uChoppiness: { value: 1.15 },
+        uSSSIntensity: { value: 1.25 },
+        uFoamIntensity: { value: 1.10 },
+        uSunDir: { value: new THREE.Vector3(0.5, 0.7, -0.5).normalize() },
+        uSunColor: { value: new THREE.Color(0xfff4d6) },
+        uDeepColor: { value: new THREE.Color(0x021b33) },
+        uShallowColor: { value: new THREE.Color(0x068a96) },
+        uSkyZenith: { value: new THREE.Color(0x134e8a) },
+        uSkyHorizon: { value: new THREE.Color(0x93c5fd) },
+        uFogColor: { value: new THREE.Color(0x8ec5f0) },
+        uFogDensity: { value: 0.0011 },
+        uBoatPos: { value: new THREE.Vector3(0, 0, 35) },
+        uBoatVel: { value: new THREE.Vector2(0, 0) }
+      };
+
+      const oceanVertexShader = `
+        uniform float uTime;
+        uniform float uWaveScale;
+        uniform float uChoppiness;
+        varying vec3 vWorldPos;
+        varying vec3 vNormal;
+        varying float vWaveCrest;
+        varying float vWaveHeight;
+
+        void addGerstner(vec2 pos, float amp, float wl, float spd, vec2 dir, inout vec3 disp, inout vec3 tangent, inout vec3 binormal, inout float crest) {
+          float k = 6.2831853 / wl;
+          float a = amp * uWaveScale;
+          float f = k * dot(dir, pos) - spd * uTime;
+          float s = sin(f);
+          float c = cos(f);
+          float steep = 0.36 * uChoppiness;
+
+          disp.x += dir.x * (steep * a * c);
+          disp.y += a * s;
+          disp.z += dir.y * (steep * a * c);
+
+          tangent += vec3(
+            -dir.x * dir.x * steep * a * k * s,
+            dir.x * a * k * c,
+            -dir.x * dir.y * steep * a * k * s
+          );
+          binormal += vec3(
+            -dir.x * dir.y * steep * a * k * s,
+            dir.y * a * k * c,
+            -dir.y * dir.y * steep * a * k * s
+          );
+          crest += smoothstep(0.15, 0.95, s);
+        }
+
+        void main() {
+          vec4 worldBase = modelMatrix * vec4(position, 1.0);
+          vec2 p = worldBase.xz;
+
+          vec3 disp = vec3(0.0);
+          vec3 tangent = vec3(1.0, 0.0, 0.0);
+          vec3 binormal = vec3(0.0, 0.0, 1.0);
+          float crest = 0.0;
+
+          addGerstner(p, 0.78, 44.0, 2.1, vec2(0.85, 0.52), disp, tangent, binormal, crest);
+          addGerstner(p, 0.52, 26.0, 2.7, vec2(-0.45, 0.89), disp, tangent, binormal, crest);
+          addGerstner(p, 0.34, 16.0, 3.2, vec2(0.92, -0.39), disp, tangent, binormal, crest);
+          addGerstner(p, 0.21, 9.5,  4.0, vec2(-0.70, -0.71), disp, tangent, binormal, crest);
+          addGerstner(p, 0.13, 5.4,  4.7, vec2(0.30, 0.95), disp, tangent, binormal, crest);
+          addGerstner(p, 0.08, 3.1,  5.4, vec2(-0.88, 0.47), disp, tangent, binormal, crest);
+          addGerstner(p, 0.05, 1.8,  6.2, vec2(0.61, -0.79), disp, tangent, binormal, crest);
+          addGerstner(p, 0.03, 1.1,  7.0, vec2(-0.25, -0.96), disp, tangent, binormal, crest);
+
+          vec3 displacedWorld = worldBase.xyz + disp;
+          vWorldPos = displacedWorld;
+          vNormal = normalize(cross(binormal, tangent));
+          vWaveCrest = crest / 8.0;
+          vWaveHeight = disp.y;
+
+          gl_Position = projectionMatrix * viewMatrix * vec4(displacedWorld, 1.0);
+        }
+      `;
+
+      const oceanFragmentShader = `
+        uniform vec3 uSunDir;
+        uniform vec3 uSunColor;
+        uniform vec3 uDeepColor;
+        uniform vec3 uShallowColor;
+        uniform vec3 uSkyZenith;
+        uniform vec3 uSkyHorizon;
+        uniform vec3 uFogColor;
+        uniform float uFogDensity;
+        uniform float uWaveScale;
+        uniform float uSSSIntensity;
+        uniform float uFoamIntensity;
+        uniform vec3 uBoatPos;
+        uniform vec2 uBoatVel;
+        uniform float uTime;
+
+        varying vec3 vWorldPos;
+        varying vec3 vNormal;
+        varying float vWaveCrest;
+        varying float vWaveHeight;
+
+        float hash21(vec2 p) {
+          p = fract(p * vec2(234.34, 435.345));
+          p += dot(p, p + 34.23);
+          return fract(p.x * p.y);
+        }
+
+        float vnoise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          f = f * f * (3.0 - 2.0 * f);
+          float a = hash21(i);
+          float b = hash21(i + vec2(1.0, 0.0));
+          float c = hash21(i + vec2(0.0, 1.0));
+          float d = hash21(i + vec2(1.0, 1.0));
+          return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+        }
+
+        // 4-Octave FBM for capillary micro-ripples & cellular foam
+        float fbmRipple(vec2 p) {
+          float v = 0.0;
+          float amp = 0.5;
+          mat2 rot = mat2(0.8, -0.6, 0.6, 0.8);
+          for (int i = 0; i < 4; i++) {
+            v += amp * vnoise(p);
+            p = rot * p * 2.12;
+            amp *= 0.48;
+          }
+          return v;
+        }
+
+        void main() {
+          vec3 V = normalize(cameraPosition - vWorldPos);
+          float dist = length(cameraPosition - vWorldPos);
+
+          // Procedural Micro-Normal Perturbation (fades gracefully with distance to avoid aliasing)
+          float detailFade = exp(-dist * 0.008);
+          vec2 uv1 = vWorldPos.xz * 0.42 + vec2(uTime * 0.35, -uTime * 0.28);
+          vec2 uv2 = vWorldPos.xz * 0.88 + vec2(-uTime * 0.45, uTime * 0.32);
+          float r1 = fbmRipple(uv1);
+          float r2 = fbmRipple(uv2);
+          vec3 microPerturb = vec3((r1 - 0.5) * 0.32, 0.0, (r2 - 0.5) * 0.32) * detailFade;
+
+          vec3 N = normalize(vNormal + microPerturb);
+          if (dot(N, V) < 0.0) N = -N;
+
+          // Schlick Fresnel with realistic water IOR (1.333 -> F0 = 0.02)
+          float cosTheta = clamp(dot(N, V), 0.0, 1.0);
+          float fresnel = 0.02 + 0.98 * pow(1.0 - cosTheta, 5.0);
+
+          // Subsurface Scattering (SSS) Jade-Turquoise Glow through thin wave crests
+          float backLit = pow(clamp(dot(V, -uSunDir), 0.0, 1.0), 3.0);
+          float crestThickness = clamp((vWaveHeight / max(0.5, uWaveScale)) * 0.5 + 0.5, 0.0, 1.0);
+          float sssFactor = (backLit * 0.75 + (1.0 - N.y) * 0.65) * crestThickness * uSSSIntensity;
+          vec3 sssGlow = vec3(0.04, 0.78, 0.72) * sssFactor * 0.68;
+
+          // Base Deep to Shallow color gradient + SSS
+          vec3 waterBody = mix(uDeepColor, uShallowColor, clamp(crestThickness * 0.55 + 0.25, 0.0, 1.0)) + sssGlow;
+
+          // Anisotropic Sky Reflection
+          vec3 R = reflect(-V, N);
+          float reflElev = clamp(R.y, 0.0, 1.0);
+          vec3 envSky = mix(uSkyHorizon, uSkyZenith, pow(reflElev, 0.6));
+          vec3 surfaceCol = mix(waterBody, envSky, fresnel * 0.85);
+
+          // Dual-Lobe Specular Sun Path (Sharp Glint + Broad Shimmer)
+          vec3 H = normalize(uSunDir + V);
+          float ndoth = max(dot(N, H), 0.0);
+          float specSharp = pow(ndoth, 380.0) * 3.8;
+          float specBroad = pow(ndoth, 38.0) * 0.38;
+          vec3 sunSpec = uSunColor * (specSharp + specBroad);
+
+          // Voronoi / Cellular Organic Foam on Wave Crests & Boat Kelvin Wake
+          float foamPattern = fbmRipple(vWorldPos.xz * 0.65 + N.xz * 2.5);
+          float crestMask = smoothstep(0.42, 0.78, vWaveCrest * (0.7 + 0.35 * uWaveScale) + foamPattern * 0.35);
+
+          // Boat Wake & Bow Wave Ring
+          vec2 toBoat = vWorldPos.xz - uBoatPos.xz;
+          float dBoat = length(toBoat);
+          float bowSplash = smoothstep(11.5, 1.8, dBoat) * smoothstep(0.25, 0.85, foamPattern + 0.25 * sin(dBoat * 2.4 - uTime * 7.5));
+          float totalFoam = clamp((crestMask * 0.82 + bowSplash * 0.85) * uFoamIntensity, 0.0, 1.0);
+
+          vec3 foamCol = mix(vec3(0.84, 0.94, 0.99), uSunColor, 0.22);
+          vec3 finalColor = mix(surfaceCol + sunSpec, foamCol, totalFoam);
+
+          // Exponential Atmospheric Perspective Fog
+          float fogFactor = 1.0 - exp(-pow(dist * uFogDensity, 1.55));
+          finalColor = mix(finalColor, uFogColor, clamp(fogFactor, 0.0, 1.0));
+
+          gl_FragColor = vec4(finalColor, 0.97);
+        }
+      `;
+
+      const oceanMaterial = new THREE.ShaderMaterial({
+        uniforms: oceanUniforms,
+        vertexShader: oceanVertexShader,
+        fragmentShader: oceanFragmentShader,
+        transparent: true,
+        side: THREE.DoubleSide
+      });
+
+      let oceanMesh = null;
+      function buildOceanMesh(segments) {
+        if (oceanMesh) {
+          scene.remove(oceanMesh);
+          oceanMesh.geometry.dispose();
+        }
+        const geo = new THREE.PlaneGeometry(1500, 1500, segments, segments);
+        geo.rotateX(-Math.PI / 2);
+        oceanMesh = new THREE.Mesh(geo, oceanMaterial);
+        scene.add(oceanMesh);
+      }
+      buildOceanMesh(220);
+
+      // 5.3 Seabed Floor with Animated Underwater Caustics Shader
+      const seabedUniforms = {
+        uTime: { value: 0 },
+        uSunDir: { value: new THREE.Vector3(0.5, 0.7, -0.5).normalize() },
+        uFogColor: { value: new THREE.Color(0x042f49) }
+      };
+
+      const seabedGeo = new THREE.PlaneGeometry(1600, 1600, 80, 80);
+      seabedGeo.rotateX(-Math.PI / 2);
+      const posAttr = seabedGeo.attributes.position;
+      for (let i = 0; i < posAttr.count; i++) {
+        const vx = posAttr.getX(i);
+        const vz = posAttr.getZ(i);
+        const undulation = Math.sin(vx * 0.015) * Math.cos(vz * 0.015) * 8.5 + Math.sin(vx * 0.05) * 2.5;
+        posAttr.setY(i, -32 + undulation);
+      }
+      seabedGeo.computeVertexNormals();
+
+      const seabedMat = new THREE.ShaderMaterial({
+        uniforms: seabedUniforms,
+        vertexShader: `
+          varying vec3 vWorldPos;
+          varying vec3 vNormal;
+          void main() {
+            vec4 wp = modelMatrix * vec4(position, 1.0);
+            vWorldPos = wp.xyz;
+            vNormal = normalize(normalMatrix * normal);
+            gl_Position = projectionMatrix * viewMatrix * wp;
+          }
+        `,
+        fragmentShader: `
+          uniform float uTime;
+          uniform vec3 uSunDir;
+          uniform vec3 uFogColor;
+          varying vec3 vWorldPos;
+          varying vec3 vNormal;
+
+          float causticPattern(vec2 uv) {
+            vec2 p = mod(uv * 6.2831853, 6.2831853) - 250.0;
+            vec2 i = vec2(p);
+            float c = 1.0;
+            float inten = 0.005;
+            for (int n = 0; n < 4; n++) {
+              float t = uTime * (1.0 - (3.5 / float(n + 1)));
+              i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));
+              c += 1.0 / length(vec2(p.x / (sin(i.x + t) / inten), p.y / (cos(i.y + t) / inten)));
+            }
+            c /= 4.0;
+            c = 1.17 - pow(c, 1.4);
+            return pow(abs(c), 8.0);
+          }
+
+          void main() {
+            float diff = max(dot(vNormal, uSunDir), 0.2);
+            vec3 sandCol = mix(vec3(0.06, 0.16, 0.25), vec3(0.18, 0.34, 0.44), diff);
+            float caust = causticPattern(vWorldPos.xz * 0.025);
+            vec3 col = sandCol + vec3(0.15, 0.65, 0.85) * caust * 0.55;
+            float dist = length(cameraPosition - vWorldPos);
+            float fogF = 1.0 - exp(-dist * 0.0045);
+            gl_FragColor = vec4(mix(col, uFogColor, clamp(fogF, 0.0, 1.0)), 1.0);
+          }
+        `
+      });
+      const seabedMesh = new THREE.Mesh(seabedGeo, seabedMat);
+      scene.add(seabedMesh);
+
+      // Underwater Volumetric God Rays (Light Shaft Cones)
+      const godRaysGroup = new THREE.Group();
+      scene.add(godRaysGroup);
+      (function buildGodRays() {
+        const rayMat = new THREE.MeshBasicMaterial({
+          color: 0x7dd3fc,
+          transparent: true,
+          opacity: 0.09,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending
+        });
+        for (let i = 0; i < 18; i++) {
+          const cone = new THREE.Mesh(new THREE.ConeGeometry(6 + (i % 4) * 2, 34, 12, 1, true), rayMat);
+          cone.position.set((Math.random() - 0.5) * 90, -16, (Math.random() - 0.5) * 90);
+          cone.rotation.z = 0.18;
+          godRaysGroup.add(cone);
+        }
+      })();
+
+      // ==========================================
+      // 6. WORLD ISLANDS, ROTATING LIGHTHOUSE BEAM, CORALS & TREASURES
+      // ==========================================
+      const worldGroup = new THREE.Group();
+      scene.add(worldGroup);
+
+      const colliders = [];
+      const treasureNodes = [];
+      let lighthouseRotor = null;
+
+      function createPalmTree(x, y, z, scale) {
+        const tree = new THREE.Group();
+        tree.position.set(x, y, z);
+        tree.scale.setScalar(scale);
+
+        const trunkMat = new THREE.MeshStandardMaterial({ color: 0x6b442a, roughness: 0.88 });
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.48, 7.8, 8), trunkMat);
+        trunk.position.y = 3.8;
+        trunk.rotation.z = 0.09;
+        trunk.castShadow = true;
+        tree.add(trunk);
+
+        const leafMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.6, side: THREE.DoubleSide });
+        for (let i = 0; i < 7; i++) {
+          const leaf = new THREE.Mesh(new THREE.ConeGeometry(1.35, 4.4, 4), leafMat);
+          leaf.position.set(0.35, 7.5, 0);
+          leaf.rotation.z = Math.PI * 0.39;
+          leaf.rotation.y = (i * Math.PI * 2) / 7;
+          leaf.castShadow = true;
+          tree.add(leaf);
+        }
+        worldGroup.add(tree);
+      }
+
+      // 6.1 Harbor Island & Rotating Lighthouse Beacon (x: 0, z: 0)
+      (function buildHarbor() {
+        const islandMat = new THREE.MeshStandardMaterial({ color: 0xd6c396, roughness: 0.86 });
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(28, 46, 16, 28), islandMat);
+        base.position.set(0, -4, -18);
+        base.receiveShadow = true;
+        worldGroup.add(base);
+        colliders.push({ x: 0, z: -18, r: 29 });
+
+        const grassMat = new THREE.MeshStandardMaterial({ color: 0x286636, roughness: 0.82 });
+        const hill = new THREE.Mesh(new THREE.CylinderGeometry(18, 26, 8, 24), grassMat);
+        hill.position.set(0, 6, -22);
+        hill.receiveShadow = true;
+        worldGroup.add(hill);
+
+        // Lighthouse Tower
+        const towerMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.42 });
+        const tower = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 3.5, 22, 20), towerMat);
+        tower.position.set(-6, 18, -24);
+        tower.castShadow = true;
+        worldGroup.add(tower);
+
+        const redBand = new THREE.Mesh(
+          new THREE.CylinderGeometry(2.65, 2.95, 6.2, 20),
+          new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.45 })
+        );
+        redBand.position.set(-6, 18, -24);
+        worldGroup.add(redBand);
+
+        const lanternRoom = new THREE.Mesh(
+          new THREE.CylinderGeometry(2.15, 2.15, 3.2, 16),
+          new THREE.MeshBasicMaterial({ color: 0xfef08a })
+        );
+        lanternRoom.position.set(-6, 30, -24);
+        worldGroup.add(lanternRoom);
+
+        // Volumetric Rotating Lighthouse Beam
+        lighthouseRotor = new THREE.Group();
+        lighthouseRotor.position.set(-6, 30, -24);
+        const beamGeo = new THREE.ConeGeometry(16, 145, 20, 1, true);
+        beamGeo.translate(0, -72.5, 0);
+        beamGeo.rotateX(-Math.PI / 2);
+        const beamMat = new THREE.MeshBasicMaterial({
+          color: 0xfef08a,
+          transparent: true,
+          opacity: 0.14,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending
+        });
+        const beamCone1 = new THREE.Mesh(beamGeo, beamMat);
+        const beamCone2 = new THREE.Mesh(beamGeo, beamMat);
+        beamCone2.rotation.y = Math.PI;
+        lighthouseRotor.add(beamCone1);
+        lighthouseRotor.add(beamCone2);
+        worldGroup.add(lighthouseRotor);
+
+        // Wooden Pier & Lantern Posts
+        const pierMat = new THREE.MeshStandardMaterial({ color: 0x5c4033, roughness: 0.88 });
+        const pier = new THREE.Mesh(new THREE.BoxGeometry(8, 1.2, 26), pierMat);
+        pier.position.set(0, 1.5, 12);
+        pier.receiveShadow = true;
+        worldGroup.add(pier);
+
+        createPalmTree(10, 3, -12, 1.15);
+        createPalmTree(-14, 3, -10, 0.98);
+        createPalmTree(4, 5, -28, 1.05);
+      })();
+
+      // 6.2 Tropical Archipelago (x: 260, z: -220)
+      (function buildTropical() {
+        const sandMat = new THREE.MeshStandardMaterial({ color: 0xe7d3a1, roughness: 0.85 });
+        const greenMat = new THREE.MeshStandardMaterial({ color: 0x166534, roughness: 0.78 });
+        const offsets = [
+          { dx: 0, dz: 0, r: 36, h: 18 },
+          { dx: 55, dz: 32, r: 22, h: 12 },
+          { dx: -48, dz: 40, r: 25, h: 14 }
+        ];
+        offsets.forEach((o) => {
+          const ix = 260 + o.dx;
+          const iz = -220 + o.dz;
+          const isle = new THREE.Mesh(new THREE.ConeGeometry(o.r, o.h, 24), sandMat);
+          isle.position.set(ix, o.h * 0.25, iz);
+          isle.receiveShadow = true;
+          worldGroup.add(isle);
+
+          const peak = new THREE.Mesh(new THREE.ConeGeometry(o.r * 0.65, o.h * 0.82, 20), greenMat);
+          peak.position.set(ix, o.h * 0.55, iz);
+          peak.castShadow = true;
+          worldGroup.add(peak);
+
+          colliders.push({ x: ix, z: iz, r: o.r * 0.78 });
+          createPalmTree(ix + o.r * 0.35, 3.5, iz, 1.2);
+          createPalmTree(ix - o.r * 0.3, 3.2, iz + o.r * 0.25, 1.05);
+        });
+      })();
+
+      // 6.3 Bioluminescent Coral Reef Sanctuary (x: -240, z: -200)
+      (function buildCoralReef() {
+        const coralColors = [0xf43f5e, 0xa855f7, 0x06b6d4, 0xf59e0b, 0x10b981];
+        for (let i = 0; i < 48; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const dist = Math.random() * 95;
+          const cx = -240 + Math.cos(angle) * dist;
+          const cz = -200 + Math.sin(angle) * dist;
+          const col = coralColors[i % coralColors.length];
+          const mat = new THREE.MeshStandardMaterial({
+            color: col,
+            emissive: col,
+            emissiveIntensity: 0.48,
+            roughness: 0.42
+          });
+          const coral = new THREE.Mesh(new THREE.DodecahedronGeometry(1.8 + Math.random() * 2.8, 1), mat);
+          coral.position.set(cx, -14 + Math.random() * 5, cz);
+          worldGroup.add(coral);
+        }
+        const archMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.88 });
+        const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(12, 1), archMat);
+        rock.position.set(-240, 2, -200);
+        rock.castShadow = true;
+        worldGroup.add(rock);
+        colliders.push({ x: -240, z: -200, r: 12 });
+      })();
+
+      // 6.4 Ancient Shipwreck Graveyard (x: -280, z: 240)
+      (function buildShipwreck() {
+        const woodMat = new THREE.MeshStandardMaterial({ color: 0x452c1e, roughness: 0.92 });
+        const hull = new THREE.Mesh(new THREE.BoxGeometry(14, 8, 38), woodMat);
+        hull.position.set(-280, -2, 240);
+        hull.rotation.z = 0.38;
+        hull.rotation.x = -0.18;
+        hull.castShadow = true;
+        worldGroup.add(hull);
+        colliders.push({ x: -280, z: 240, r: 18 });
+
+        for (let m = -1; m <= 1; m++) {
+          const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.65, 26, 10), woodMat);
+          mast.position.set(-280 + m * 3, 8, 240 + m * 10);
+          mast.rotation.z = 0.42;
+          mast.castShadow = true;
+          worldGroup.add(mast);
+        }
+      })();
+
+      // 6.5 Crystalline Arctic Icebergs (x: 290, z: 270)
+      (function buildArctic() {
+        const iceMat = new THREE.MeshPhysicalMaterial({
+          color: 0xe0f2fe,
+          emissive: 0x0c4a6e,
+          emissiveIntensity: 0.18,
+          roughness: 0.18,
+          metalness: 0.12,
+          reflectivity: 0.9
+        });
+        const bergs = [
+          { dx: 0, dz: 0, r: 34, h: 44 },
+          { dx: -55, dz: 30, r: 24, h: 29 },
+          { dx: 48, dz: -42, r: 26, h: 33 }
+        ];
+        bergs.forEach((b) => {
+          const bx = 290 + b.dx;
+          const bz = 270 + b.dz;
+          const mesh = new THREE.Mesh(new THREE.ConeGeometry(b.r, b.h, 8), iceMat);
+          mesh.position.set(bx, b.h * 0.32, bz);
+          mesh.castShadow = true;
+          worldGroup.add(mesh);
+          colliders.push({ x: bx, z: bz, r: b.r * 0.75 });
+        });
+      })();
+
+      // 6.6 Treasure Chests / Salvage Nodes across all 6 Biomes
+      BIOMES.forEach((b, idx) => {
+        const tx = b.x + (idx % 2 === 0 ? 24 : -24);
+        const tz = b.z + (idx % 3 === 0 ? 28 : -22);
+        const chestGroup = new THREE.Group();
+        chestGroup.position.set(tx, 0.5, tz);
+
+        const crate = new THREE.Mesh(
+          new THREE.BoxGeometry(2.6, 1.8, 1.8),
+          new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.7, roughness: 0.25 })
+        );
+        crate.castShadow = true;
+        chestGroup.add(crate);
+
+        const beaconRing = new THREE.Mesh(
+          new THREE.TorusGeometry(2.9, 0.18, 10, 28),
+          new THREE.MeshBasicMaterial({ color: 0xfacc15 })
+        );
+        beaconRing.rotation.x = Math.PI / 2;
+        chestGroup.add(beaconRing);
+
+        worldGroup.add(chestGroup);
+        treasureNodes.push({
+          id: 'treasure_' + b.id,
+          name: 'Kho Báu Cổ Vật – ' + b.name,
+          x: tx,
+          z: tz,
+          reward: 350 + idx * 120,
+          mesh: chestGroup
+        });
+      });
+
+      // ==========================================
+      // 7. HIGH-DETAIL PBR YACHT, BOW SPRAY & WAKE TRAIL
+      // ==========================================
+      const boatGroup = new THREE.Group();
+      scene.add(boatGroup);
+
+      let boatSearchLight = null;
+      let boatWakeRibbon = null;
+
+      (function buildPlayerBoatMesh() {
+        const hullMat = new THREE.MeshPhysicalMaterial({
+          color: 0xf8fafc,
+          roughness: 0.22,
+          metalness: 0.18,
+          clearcoat: 0.85,
+          clearcoatRoughness: 0.15
+        });
+        const trimMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3, metalness: 0.45 });
+        const deckMat = new THREE.MeshStandardMaterial({ color: 0x854d0e, roughness: 0.72 });
+        const chromeMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.15, metalness: 0.92 });
+        const glassMat = new THREE.MeshPhysicalMaterial({
+          color: 0x0ea5e9,
+          roughness: 0.08,
+          metalness: 0.2,
+          transparent: true,
+          opacity: 0.78
+        });
+
+        // Main streamlined hull
+        const hullMain = new THREE.Mesh(new THREE.BoxGeometry(3.8, 1.5, 8.6), hullMat);
+        hullMain.position.y = 0.4;
+        hullMain.castShadow = true;
+        hullMain.receiveShadow = true;
+        boatGroup.add(hullMain);
+
+        // Pointed Bow (Front is -Z)
+        const bowGeo = new THREE.ConeGeometry(2.7, 4.0, 4);
+        bowGeo.rotateX(-Math.PI / 2);
+        bowGeo.rotateZ(Math.PI / 4);
+        const bow = new THREE.Mesh(bowGeo, trimMat);
+        bow.position.set(0, 0.45, -6.2);
+        bow.castShadow = true;
+        boatGroup.add(bow);
+
+        // Teak Wood Deck
+        const deck = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.25, 8.3), deckMat);
+        deck.position.y = 1.2;
+        deck.receiveShadow = true;
+        boatGroup.add(deck);
+
+        // Metallic Side Guardrails
+        const leftRail = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 7.6, 8), chromeMat);
+        leftRail.rotation.x = Math.PI / 2;
+        leftRail.position.set(-1.7, 1.65, -0.3);
+        boatGroup.add(leftRail);
+
+        const rightRail = leftRail.clone();
+        rightRail.position.x = 1.7;
+        boatGroup.add(rightRail);
+
+        // Pilot Cabin Superstructure
+        const cabin = new THREE.Mesh(new THREE.BoxGeometry(2.65, 1.75, 3.6), hullMat);
+        cabin.position.set(0, 2.05, -0.4);
+        cabin.castShadow = true;
+        boatGroup.add(cabin);
+
+        const windshield = new THREE.Mesh(new THREE.BoxGeometry(2.72, 0.88, 3.66), glassMat);
+        windshield.position.set(0, 2.28, -0.4);
+        boatGroup.add(windshield);
+
+        // Navigation Lights (Port Red / Starboard Green)
+        const portLight = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+        portLight.position.set(-1.4, 2.8, -1.8);
+        boatGroup.add(portLight);
+
+        const starLight = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), new THREE.MeshBasicMaterial({ color: 0x22c55e }));
+        starLight.position.set(1.4, 2.8, -1.8);
+        boatGroup.add(starLight);
+
+        // Radar Arch & Forward Searchlight Cone
+        const radar = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 1.45, 10), chromeMat);
+        radar.position.set(0, 3.45, -0.4);
+        boatGroup.add(radar);
+
+        const searchConeGeo = new THREE.ConeGeometry(4.8, 28, 16, 1, true);
+        searchConeGeo.translate(0, -14, 0);
+        searchConeGeo.rotateX(Math.PI / 2 - 0.12);
+        boatSearchLight = new THREE.Mesh(
+          searchConeGeo,
+          new THREE.MeshBasicMaterial({
+            color: 0xe0f2fe,
+            transparent: true,
+            opacity: 0.14,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+          })
+        );
+        boatSearchLight.position.set(0, 2.9, -2.2);
+        boatGroup.add(boatSearchLight);
+
+        // Dynamic Kelvin Wake Foam Trail behind Stern
+        const wakeGeo = new THREE.PlaneGeometry(4.5, 22, 8, 16);
+        wakeGeo.rotateX(-Math.PI / 2);
+        wakeGeo.translate(0, 0.12, 15.5);
+        boatWakeRibbon = new THREE.Mesh(
+          wakeGeo,
+          new THREE.MeshBasicMaterial({
+            color: 0xe0f2fe,
+            transparent: true,
+            opacity: 0.35,
+            side: THREE.DoubleSide,
+            depthWrite: false
+          })
+        );
+        boatGroup.add(boatWakeRibbon);
+      })();
+
+      // Dynamic Bow Splash Particle System (120 Hydro-Spray Particles)
+      const sprayCount = 120;
+      const sprayGeo = new THREE.BufferGeometry();
+      const sprayPositions = new Float32Array(sprayCount * 3);
+      const sprayVelocities = [];
+      for (let i = 0; i < sprayCount; i++) {
+        sprayPositions[i * 3] = 0;
+        sprayPositions[i * 3 + 1] = -20;
+        sprayPositions[i * 3 + 2] = 0;
+        sprayVelocities.push({ vx: 0, vy: 0, vz: 0, life: Math.random() });
+      }
+      sprayGeo.setAttribute('position', new THREE.BufferAttribute(sprayPositions, 3));
+      const sprayMat = new THREE.PointsMaterial({
+        color: 0xf0f9ff,
+        size: 0.55,
+        transparent: true,
+        opacity: 0.78,
+        blending: THREE.AdditiveBlending
+      });
+      const sprayPoints = new THREE.Points(sprayGeo, sprayMat);
+      scene.add(sprayPoints);
+
+      // Diver Avatar (Visible in Dive Mode)
+      const diverGroup = new THREE.Group();
+      diverGroup.visible = false;
+      scene.add(diverGroup);
+      (function buildDiverMesh() {
+        const suitMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.45 });
+        const tankMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.65, roughness: 0.25 });
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.3, 1.5, 12), suitMat);
+        body.rotation.x = Math.PI / 2;
+        diverGroup.add(body);
+        const tank = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.9, 12), tankMat);
+        tank.rotation.x = Math.PI / 2;
+        tank.position.set(0, 0.38, 0);
+        diverGroup.add(tank);
+      })();
+
+      // Underwater Plankton / Bioluminescent Marine Snow Particles
+      const planktonCount = 520;
+      const planktonGeo = new THREE.BufferGeometry();
+      const planktonPos = new Float32Array(planktonCount * 3);
+      for (let i = 0; i < planktonCount; i++) {
+        planktonPos[i * 3] = (Math.random() - 0.5) * 130;
+        planktonPos[i * 3 + 1] = -Math.random() * 35;
+        planktonPos[i * 3 + 2] = (Math.random() - 0.5) * 130;
+      }
+      planktonGeo.setAttribute('position', new THREE.BufferAttribute(planktonPos, 3));
+      const planktonMat = new THREE.PointsMaterial({ color: 0x7dd3fc, size: 0.28, transparent: true, opacity: 0.72 });
+      const planktonPoints = new THREE.Points(planktonGeo, planktonMat);
+      scene.add(planktonPoints);
+
+      // ==========================================
+      // 8. MARINE WILDLIFE AI (FISH, DOLPHINS, SHARKS, WHALE, SEAGULLS)
+      // ==========================================
+      const wildlifeAgents = [];
+      const wildlifeGroup = new THREE.Group();
+      scene.add(wildlifeGroup);
+
+      function spawnMarineLife() {
+        // 1. Tropical & Coral Fish Schools
+        const fishColors = [0xf59e0b, 0x38bdf8, 0xf43f5e, 0x34d399];
+        for (let i = 0; i < 40; i++) {
+          const mat = new THREE.MeshStandardMaterial({
+            color: fishColors[i % fishColors.length],
+            emissive: fishColors[i % fishColors.length],
+            emissiveIntensity: 0.2,
+            roughness: 0.35
+          });
+          const mesh = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1.35, 6), mat);
+          mesh.rotation.x = Math.PI / 2;
+          const centerBiome = BIOMES[i % 4];
+          const angle = Math.random() * Math.PI * 2;
+          const radius = 15 + Math.random() * 55;
+          wildlifeGroup.add(mesh);
+          wildlifeAgents.push({
+            type: 'fish',
+            mesh,
+            cx: centerBiome.x,
+            cz: centerBiome.z,
+            angle,
+            radius,
+            speed: 0.45 + Math.random() * 0.4,
+            depth: -3.5 - Math.random() * 9.0,
+            phase: Math.random() * 6.28
+          });
+        }
+
+        // 2. Dolphins (Leap out of water near Tropical & Harbor)
+        const dolphinMat = new THREE.MeshPhysicalMaterial({ color: 0x64748b, roughness: 0.2, metalness: 0.25, clearcoat: 0.9 });
+        for (let i = 0; i < 6; i++) {
+          const mesh = new THREE.Mesh(new THREE.ConeGeometry(0.65, 3.2, 10), dolphinMat);
+          mesh.rotation.x = Math.PI / 2;
+          wildlifeGroup.add(mesh);
+          wildlifeAgents.push({
+            type: 'dolphin',
+            mesh,
+            cx: i < 3 ? 40 : 240,
+            cz: i < 3 ? -60 : -200,
+            angle: i * 1.1,
+            radius: 35 + i * 8,
+            speed: 0.55,
+            depth: -1.2,
+            phase: i * 1.7
+          });
+        }
+
+        // 3. Sharks (Patrol Shipwreck & Abyss)
+        const sharkMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.45 });
+        for (let i = 0; i < 5; i++) {
+          const shark = new THREE.Group();
+          const body = new THREE.Mesh(new THREE.ConeGeometry(0.85, 4.5, 10), sharkMat);
+          body.rotation.x = Math.PI / 2;
+          shark.add(body);
+          const fin = new THREE.Mesh(new THREE.ConeGeometry(0.45, 1.2, 4), sharkMat);
+          fin.position.y = 0.85;
+          shark.add(fin);
+          wildlifeGroup.add(shark);
+          wildlifeAgents.push({
+            type: 'shark',
+            mesh: shark,
+            cx: i < 3 ? -280 : 0,
+            cz: i < 3 ? 240 : -460,
+            angle: i * 1.4,
+            radius: 32 + i * 10,
+            speed: 0.38,
+            depth: -0.5,
+            phase: i
+          });
+        }
+
+        // 4. Giant Humpback Whale
+        const whaleMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.5 });
+        const whale = new THREE.Group();
+        const wBody = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 1.4, 15, 14), whaleMat);
+        wBody.rotation.x = Math.PI / 2;
+        whale.add(wBody);
+        wildlifeGroup.add(whale);
+        wildlifeAgents.push({
+          type: 'whale',
+          mesh: whale,
+          cx: 220,
+          cz: 180,
+          angle: 0,
+          radius: 95,
+          speed: 0.16,
+          depth: -2.2,
+          phase: 0
+        });
+
+        // 5. Coastal Seagulls Flocking in Sky
+        const gullMat = new THREE.MeshBasicMaterial({ color: 0xf8fafc, side: THREE.DoubleSide });
+        for (let i = 0; i < 14; i++) {
+          const gull = new THREE.Group();
+          const wingL = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.35), gullMat);
+          wingL.position.x = -0.55;
+          const wingR = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.35), gullMat);
+          wingR.position.x = 0.55;
+          gull.add(wingL);
+          gull.add(wingR);
+          wildlifeGroup.add(gull);
+          wildlifeAgents.push({
+            type: 'seagull',
+            mesh: gull,
+            wingL,
+            wingR,
+            cx: i < 7 ? 0 : 260,
+            cz: i < 7 ? -15 : -220,
+            angle: i * 0.9,
+            radius: 28 + (i % 5) * 9,
+            speed: 0.65,
+            depth: 22 + (i % 4) * 4,
+            phase: i * 1.3
+          });
+        }
+      }
+      spawnMarineLife();
+
+      // ==========================================
+      // 9. WEATHER, ATMOSPHERE & POST-PROCESSING CONTROLLER
+      // ==========================================
+      const WEATHER_PRESETS = {
+        sunny:  { label: 'Trời Nắng Rực Rỡ', wave: 1.0, zenith: 0x0c4a6e, horizon: 0x7dd3fc, fog: 0x8ec5f0, fogDens: 0.0010, sunInt: 1.55, clouds: 0.38, night: 0.0, rain: false, time: 10.2 },
+        dawn:   { label: 'Bình Minh Vàng',   wave: 0.85, zenith: 0x312e81, horizon: 0xfb923c, fog: 0xfdba74, fogDens: 0.0015, sunInt: 1.15, clouds: 0.45, night: 0.15, rain: false, time: 6.15 },
+        sunset: { label: 'Hoàng Hôn Điện Ảnh', wave: 0.95, zenith: 0x3b0764, horizon: 0xf43f5e, fog: 0xfb7185, fogDens: 0.0016, sunInt: 1.10, clouds: 0.52, night: 0.2, rain: false, time: 17.85 },
+        night:  { label: 'Đêm Sao & Cực Quang', wave: 0.9, zenith: 0x020617, horizon: 0x0f172a, fog: 0x091526, fogDens: 0.0018, sunInt: 0.25, clouds: 0.22, night: 1.0, rain: false, time: 22.5 },
+        fog:    { label: 'Sương Mù Khí Quyển', wave: 0.7, zenith: 0x64748b, horizon: 0xcbd5e1, fog: 0xcbd5e1, fogDens: 0.0048, sunInt: 0.65, clouds: 0.85, night: 0.0, rain: false, time: 8.0 },
+        storm:  { label: 'Siêu Giông Bão',   wave: 2.15, zenith: 0x0f172a, horizon: 0x1e293b, fog: 0x1e293b, fogDens: 0.0035, sunInt: 0.35, clouds: 0.92, night: 0.4, rain: true,  time: 15.0 },
+        calm:   { label: 'Mặt Biển Pha Lê',  wave: 0.30, zenith: 0x0284c7, horizon: 0xbae6fd, fog: 0xbae6fd, fogDens: 0.0007, sunInt: 1.45, clouds: 0.20, night: 0.0, rain: false, time: 11.2 }
+      };
+
+      function applyWeatherPreset(key) {
+        const p = WEATHER_PRESETS[key] || WEATHER_PRESETS.sunny;
+        state.weather = key;
+        state.waveScale = p.wave;
+        state.timeOfDay = p.time;
+
+        oceanUniforms.uWaveScale.value = state.waveScale;
+        oceanUniforms.uSkyZenith.value.setHex(p.zenith);
+        oceanUniforms.uSkyHorizon.value.setHex(p.horizon);
+        oceanUniforms.uFogColor.value.setHex(p.fog);
+        oceanUniforms.uFogDensity.value = p.fogDens;
+
+        skyUniforms.uZenithColor.value.setHex(p.zenith);
+        skyUniforms.uHorizonColor.value.setHex(p.horizon);
+        skyUniforms.uCloudDensity.value = p.clouds;
+        skyUniforms.uNightFactor.value = p.night;
+
+        scene.fog.color.setHex(p.fog);
+        scene.fog.density = p.fogDens;
+        sunLight.intensity = p.sunInt;
+
+        if (boatSearchLight) {
+          boatSearchLight.visible = (key === 'night' || key === 'storm' || key === 'fog');
+        }
+
+        document.getElementById('rain-overlay').style.opacity = p.rain ? '0.8' : '0';
+        document.getElementById('hud-weather-label').textContent = p.label;
+        document.getElementById('select-weather-quick').value = key;
+        document.getElementById('slider-wave-scale').value = String(state.waveScale);
+        document.getElementById('label-wave-scale').textContent = state.waveScale.toFixed(2) + 'x';
+        updateSunPositionFromTime();
+      }
+
+      function updateSunPositionFromTime() {
+        const t = state.timeOfDay;
+        const angle = ((t - 6) / 12) * Math.PI;
+        const sy = Math.sin(angle);
+        const sx = Math.cos(angle);
+        const sunVec = new THREE.Vector3(sx * 0.82, Math.max(0.04, sy), -0.48).normalize();
+
+        oceanUniforms.uSunDir.value.copy(sunVec);
+        skyUniforms.uSunDir.value.copy(sunVec);
+        seabedUniforms.uSunDir.value.copy(sunVec);
+        sunLight.position.copy(sunVec).multiplyScalar(320);
+
+        // Dynamic Night Factor when sun dips low
+        if (state.weather !== 'night') {
+          skyUniforms.uNightFactor.value = sy < 0.08 ? Math.min(1.0, (0.08 - sy) * 4.0) : 0.0;
+        }
+
+        const hrs = Math.floor(t) % 24;
+        const mins = Math.floor((t - Math.floor(t)) * 60);
+        const timeStr = String(hrs).padStart(2, '0') + ':' + String(mins).padStart(2, '0');
+        document.getElementById('hud-time').textContent = timeStr;
+        document.getElementById('label-time-slider').textContent = timeStr;
+      }
+
+      function updatePostProcessingFilter() {
+        if (state.postFx) {
+          canvas.style.filter = 'contrast(1.06) saturate(1.14)';
+          document.getElementById('lens-flare-overlay').style.opacity = '1';
+        } else {
+          canvas.style.filter = 'none';
+          document.getElementById('lens-flare-overlay').style.opacity = '0';
+        }
+      }
+      updatePostProcessingFilter();
+
+      // ==========================================
+      // 10. CONTROLS, INPUTS & UI HANDLERS
+      // ==========================================
+      const keys = { up: false, down: false, left: false, right: false };
+
+      window.addEventListener('keydown', (e) => {
+        const code = e.code;
+        if (code === 'KeyW' || code === 'ArrowUp') keys.up = true;
+        if (code === 'KeyS' || code === 'ArrowDown') keys.down = true;
+        if (code === 'KeyA' || code === 'ArrowLeft') keys.left = true;
+        if (code === 'KeyD' || code === 'ArrowRight') keys.right = true;
+        if (code === 'Space') {
+          if (state.fishing.active) {
+            triggerFishingReel();
+          } else {
+            toggleAnchorBrake();
+          }
+        }
+        if (code === 'KeyC') toggleDiveMode();
+        if (code === 'KeyF') toggleFishingPanel();
+        if (code === 'KeyM') toggleModal('modal-map');
+        if (code === 'KeyI') toggleModal('modal-inventory');
+        if (code === 'KeyJ') toggleModal('modal-journal');
+        if (code === 'KeyE') triggerContextAction();
+      });
+
+      window.addEventListener('keyup', (e) => {
+        const code = e.code;
+        if (code === 'KeyW' || code === 'ArrowUp') keys.up = false;
+        if (code === 'KeyS' || code === 'ArrowDown') keys.down = false;
+        if (code === 'KeyA' || code === 'ArrowLeft') keys.left = false;
+        if (code === 'KeyD' || code === 'ArrowRight') keys.right = false;
+      });
+
+      function bindHoldButton(id, keyName) {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        const start = (ev) => { ev.preventDefault(); keys[keyName] = true; };
+        const end = (ev) => { ev.preventDefault(); keys[keyName] = false; };
+        btn.addEventListener('mousedown', start);
+        btn.addEventListener('mouseup', end);
+        btn.addEventListener('mouseleave', end);
+        btn.addEventListener('touchstart', start, { passive: false });
+        btn.addEventListener('touchend', end, { passive: false });
+      }
+      bindHoldButton('ctrl-up', 'up');
+      bindHoldButton('ctrl-down', 'down');
+      bindHoldButton('ctrl-left', 'left');
+      bindHoldButton('ctrl-right', 'right');
+
+      canvas.addEventListener('mousedown', (e) => {
+        state.camera.dragging = true;
+        state.camera.lastX = e.clientX;
+        state.camera.lastY = e.clientY;
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!state.camera.dragging) return;
+        const dx = e.clientX - state.camera.lastX;
+        const dy = e.clientY - state.camera.lastY;
+        state.camera.lastX = e.clientX;
+        state.camera.lastY = e.clientY;
+        state.camera.yaw -= dx * 0.0065;
+        state.camera.pitch = Math.max(-0.25, Math.min(1.25, state.camera.pitch + dy * 0.0055));
+      });
+      window.addEventListener('mouseup', () => { state.camera.dragging = false; });
+
+      canvas.addEventListener('wheel', (e) => {
+        state.camera.distance = Math.max(10, Math.min(75, state.camera.distance + e.deltaY * 0.025));
+      }, { passive: true });
+
+      function toggleDiveMode() {
+        if (state.mode === 'boat') {
+          state.mode = 'dive';
+          state.diver.x = state.boat.x;
+          state.diver.z = state.boat.z;
+          state.diver.y = -5.5;
+          diverGroup.visible = true;
+          document.getElementById('label-dive-mode').textContent = 'Lên Tàu';
+          document.getElementById('telemetry-mode-title').textContent = '🤿 Chế Độ Lặn Thám Hiểm';
+          document.getElementById('underwater-overlay').style.opacity = '1';
+          scene.fog.color.setHex(0x042f49);
+          scene.fog.density = 0.012;
+          showToast('🤿 Đã lặn xuống đại dương! Quan sát vân sáng Caustics & tia nắng dưới đáy biển.', 'sky');
+        } else {
+          state.mode = 'boat';
+          diverGroup.visible = false;
+          document.getElementById('label-dive-mode').textContent = 'Lặn Biển';
+          document.getElementById('telemetry-mode-title').textContent = '🚢 Tàu Thám Hiểm Cấp ' + state.upgrades.engine;
+          document.getElementById('underwater-overlay').style.opacity = '0';
+          applyWeatherPreset(state.weather);
+          showToast('🚢 Đã trở lại buồng lái tàu thám hiểm!', 'emerald');
+        }
+      }
+
+      function toggleAnchorBrake() {
+        state.boat.anchored = !state.boat.anchored;
+        const btn = document.getElementById('ctrl-brake');
+        if (state.boat.anchored) {
+          state.boat.vx *= 0.1;
+          state.boat.vz *= 0.1;
+          btn.classList.add('bg-amber-500/30', 'border-amber-400');
+          showToast('⚓ Đã thả neo cố định tàu tại vị trí hiện tại', 'amber');
+        } else {
+          btn.classList.remove('bg-amber-500/30', 'border-amber-400');
+          showToast('⚓ Đã kéo neo, sẵn sàng hải trình!', 'sky');
+        }
+      }
+
+      function toggleFishingPanel() {
+        const panel = document.getElementById('fishing-panel');
+        state.fishing.active = !state.fishing.active;
+        if (state.fishing.active) {
+          panel.classList.remove('hidden');
+          const sonarBonus = (state.upgrades.sonar - 1) * 5;
+          state.fishing.sweetStart = 25 + Math.random() * 35;
+          state.fishing.sweetWidth = Math.min(48, 24 + sonarBonus);
+          const sweetEl = document.getElementById('fishing-sweet-spot');
+          sweetEl.style.left = state.fishing.sweetStart + '%';
+          sweetEl.style.width = state.fishing.sweetWidth + '%';
+          document.getElementById('fishing-status').textContent = 'Canh thanh lực màu vàng nằm trong vùng xanh rồi nhấn Giật Cần!';
+        } else {
+          panel.classList.add('hidden');
+        }
+      }
+
+      function triggerFishingReel() {
+        if (!state.fishing.active) return;
+        const c = state.fishing.cursor;
+        const s = state.fishing.sweetStart;
+        const e = s + state.fishing.sweetWidth;
+        if (c >= s && c <= e) {
+          const currentBiome = getCurrentBiome();
+          let pool = FISH_CATALOG.filter(f => f.biome === currentBiome.id);
+          if (pool.length === 0 || Math.random() < 0.35) pool = FISH_CATALOG;
+          const caught = pool[Math.floor(Math.random() * pool.length)];
+
+          state.inventory.push({ name: caught.name, value: caught.value, rarity: caught.rarity });
+          state.fishCaught += 1;
+          playChime(660, 0.35);
+          document.getElementById('fishing-status').textContent = '🎉 Câu thành công: ' + caught.name + ' (+' + caught.value + '$)!';
+          showToast('🐟 Đã câu được ' + caught.name + ' (' + caught.rarity + ' - ' + caught.value + '$)', 'emerald');
+          renderInventoryModal();
+        } else {
+          playChime(220, 0.25);
+          document.getElementById('fishing-status').textContent = 'Cá đã vùng thoát! Hãy thử giật cần lại khi con trỏ vào vùng xanh.';
+        }
+      }
+
+      let activeNearbyTreasure = null;
+      function triggerContextAction() {
+        if (activeNearbyTreasure) {
+          if (!state.collectedTreasures.includes(activeNearbyTreasure.id)) {
+            state.collectedTreasures.push(activeNearbyTreasure.id);
+            state.credits += activeNearbyTreasure.reward;
+            activeNearbyTreasure.mesh.visible = false;
+            playChime(880, 0.45);
+            showToast('🏆 Trục vớt thành công ' + activeNearbyTreasure.name + ' (+' + activeNearbyTreasure.reward + '$)!', 'amber');
+            updateCreditsUI();
+            renderInventoryModal();
+          }
+        }
+      }
+
+      function buildResearchOutpost() {
+        if (state.credits < 300) {
+          showToast('Cần 300$ để xây dựng Trạm Nghiên Cứu Đại Dương!', 'amber');
+          return;
+        }
+        state.credits -= 300;
+        const ox = state.boat.x + Math.sin(state.boat.heading) * -18;
+        const oz = state.boat.z + Math.cos(state.boat.heading) * -18;
+        spawnOutpostMesh(ox, oz);
+        state.outposts.push({ x: Math.round(ox), z: Math.round(oz) });
+        playChime(520, 0.4);
+        showToast('🏗️ Đã xây dựng Trạm Nghiên Cứu Đại Dương tại (' + Math.round(ox) + ', ' + Math.round(oz) + ')!', 'emerald');
+        updateCreditsUI();
+        saveGameState();
+      }
+
+      function spawnOutpostMesh(x, z) {
+        const outpost = new THREE.Group();
+        outpost.position.set(x, 0.5, z);
+        const legMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.65, roughness: 0.35 });
+        const domeMat = new THREE.MeshPhysicalMaterial({ color: 0x38bdf8, roughness: 0.15, metalness: 0.25, clearcoat: 0.9 });
+        const platform = new THREE.Mesh(new THREE.CylinderGeometry(6, 6, 1.2, 16), legMat);
+        platform.position.y = 2.5;
+        platform.castShadow = true;
+        outpost.add(platform);
+        const dome = new THREE.Mesh(new THREE.SphereGeometry(3.8, 20, 14, 0, Math.PI * 2, 0, Math.PI / 2), domeMat);
+        dome.position.y = 3.1;
+        dome.castShadow = true;
+        outpost.add(dome);
+        worldGroup.add(outpost);
+      }
+
+      // ==========================================
+      // 11. UI MODALS & RENDERING HELPERS
+      // ==========================================
+      function toggleModal(modalId) {
+        const modals = ['modal-menu', 'modal-map', 'modal-inventory', 'modal-settings', 'modal-journal'];
+        const target = document.getElementById(modalId);
+        const isHidden = target.classList.contains('hidden');
+        modals.forEach(id => {
+          const m = document.getElementById(id);
+          m.classList.add('hidden');
+          m.classList.remove('flex');
+        });
+        if (isHidden) {
+          target.classList.remove('hidden');
+          target.classList.add('flex');
+          if (modalId === 'modal-map') renderWorldMapModal();
+          if (modalId === 'modal-inventory') renderInventoryModal();
+          if (modalId === 'modal-journal') renderJournalModal();
+        }
+      }
+
+      function updateCreditsUI() {
+        document.getElementById('hud-credits').textContent = state.credits + '$';
+        document.getElementById('inv-credits-val').textContent = String(state.credits);
+      }
+
+      function getCurrentBiome() {
+        let best = BIOMES[0];
+        let bestDist = Infinity;
+        for (let i = 0; i < BIOMES.length; i++) {
+          const b = BIOMES[i];
+          const d = Math.hypot(state.boat.x - b.x, state.boat.z - b.z);
+          if (d < bestDist) {
+            bestDist = d;
+            best = b;
+          }
+        }
+        return best;
+      }
+
+      function renderWorldMapModal() {
+        const list = document.getElementById('biome-list-container');
+        list.innerHTML = '';
+        BIOMES.forEach((b) => {
+          const dist = Math.round(Math.hypot(state.boat.x - b.x, state.boat.z - b.z));
+          const discovered = state.discoveredBiomes.includes(b.id);
+          const card = document.createElement('div');
+          card.className = 'p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between gap-2';
+          card.innerHTML = `
+            <div>
+              <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full" style="background:${b.color}"></span>
+                <span>${b.name}</span>
+                ${discovered ? '<span class="text-[10px] px-1.5 py-0.2 bg-emerald-500/20 text-emerald-300 rounded">Đã khám phá</span>' : ''}
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">${b.desc}</p>
+              <div class="text-[10px] font-mono-num text-sky-300 mt-1">Tọa độ: (${b.x}, ${b.z}) • Cách: ${dist}m</div>
+            </div>
+            <button data-teleport="${b.id}" class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shrink-0 transition">
+              Dịch Chuyển
+            </button>
+          `;
+          list.appendChild(card);
+        });
+
+        list.querySelectorAll('[data-teleport]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const bid = btn.getAttribute('data-teleport');
+            const target = BIOMES.find(x => x.id === bid);
+            if (target) {
+              state.boat.x = target.x;
+              state.boat.z = target.z + 32;
+              state.boat.vx = 0;
+              state.boat.vz = 0;
+              if (!state.discoveredBiomes.includes(target.id)) {
+                state.discoveredBiomes.push(target.id);
+              }
+              toggleModal('modal-map');
+              showToast('🧭 Đã hải hành tới ' + target.name + '!', 'sky');
+            }
+          });
+        });
+
+        const mc = document.getElementById('world-map-canvas');
+        const ctx = mc.getContext('2d');
+        ctx.fillStyle = '#041426';
+        ctx.fillRect(0, 0, 320, 320);
+
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
+        for (let g = 0; g <= 320; g += 40) {
+          ctx.beginPath(); ctx.moveTo(g, 0); ctx.lineTo(g, 320); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(0, g); ctx.lineTo(320, g); ctx.stroke();
+        }
+
+        const toMap = (wx, wz) => ({
+          mx: 160 + (wx / 600) * 140,
+          mz: 160 + (wz / 600) * 140
+        });
+
+        BIOMES.forEach(b => {
+          const p = toMap(b.x, b.z);
+          ctx.fillStyle = b.color;
+          ctx.beginPath();
+          ctx.arc(p.mx, p.mz, 7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#e2e8f0';
+          ctx.font = '10px Inter';
+          ctx.fillText(b.name.split(' ')[0], p.mx - 14, p.mz - 10);
+        });
+
+        const bp = toMap(state.boat.x, state.boat.z);
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(bp.mx, bp.mz, 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function renderInventoryModal() {
+        updateCreditsUI();
+        document.getElementById('stat-fish-caught').textContent = String(state.fishCaught);
+        document.getElementById('stat-treasures').textContent = state.collectedTreasures.length + '/' + treasureNodes.length;
+
+        const invList = document.getElementById('inventory-items-list');
+        invList.innerHTML = '';
+        if (state.inventory.length === 0) {
+          invList.innerHTML = '<div class="text-slate-500 py-4 text-center">Kho cá hiện đang trống. Hãy nhấn nút 🎣 Câu Cá trên thanh công cụ!</div>';
+        } else {
+          state.inventory.forEach((item) => {
+            const row = document.createElement('div');
+            row.className = 'flex items-center justify-between p-2 rounded bg-slate-800/70 border border-slate-700/60';
+            row.innerHTML = `
+              <div>
+                <span class="font-semibold text-white">${item.name}</span>
+                <span class="text-[10px] ml-1.5 px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300">${item.rarity}</span>
+              </div>
+              <span class="font-mono-num text-emerald-300 font-bold">+${item.value}$</span>
+            `;
+            invList.appendChild(row);
+          });
+        }
+
+        const upgContainer = document.getElementById('upgrades-list');
+        upgContainer.innerHTML = '';
+        UPGRADE_CATALOG.forEach(u => {
+          const lvl = state.upgrades[u.id] || 1;
+          const cost = u.baseCost * lvl;
+          const item = document.createElement('div');
+          item.className = 'p-2.5 rounded-lg bg-slate-800/75 border border-slate-700/70 flex items-center justify-between gap-2';
+          item.innerHTML = `
+            <div>
+              <div class="font-bold text-white">${u.name} <span class="text-sky-300 font-mono-num">Cấp ${lvl}</span></div>
+              <div class="text-[11px] text-slate-400">${u.desc}</div>
+            </div>
+            <button data-upgrade="${u.id}" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shrink-0 transition">
+              Nâng Cấp (${cost}$)
+            </button>
+          `;
+          upgContainer.appendChild(item);
+        });
+
+        upgContainer.querySelectorAll('[data-upgrade]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const uid = btn.getAttribute('data-upgrade');
+            const spec = UPGRADE_CATALOG.find(x => x.id === uid);
+            const lvl = state.upgrades[uid] || 1;
+            const cost = spec.baseCost * lvl;
+            if (state.credits < cost) {
+              showToast('Không đủ ngân quỹ! Hãy câu cá hoặc trục vớt kho báu.', 'amber');
+              return;
+            }
+            state.credits -= cost;
+            state.upgrades[uid] = lvl + 1;
+            state.fuel = 100;
+            state.hull = 100;
+            playChime(740, 0.35);
+            showToast('⚡ Đã nâng cấp ' + spec.name + ' lên Cấp ' + state.upgrades[uid] + '!', 'emerald');
+            renderInventoryModal();
+            saveGameState();
+          });
+        });
+      }
+
+      function renderJournalModal() {
+        const container = document.getElementById('journal-entries');
+        container.innerHTML = '';
+        BIOMES.forEach(b => {
+          const unlocked = state.discoveredBiomes.includes(b.id);
+          const div = document.createElement('div');
+          div.className = 'p-2 rounded bg-slate-800/60 flex items-center justify-between';
+          div.innerHTML = `
+            <div>
+              <span class="font-semibold ${unlocked ? 'text-white' : 'text-slate-500'}">${b.name}</span>
+              <p class="text-[11px] text-slate-400">${unlocked ? b.desc : 'Chưa đặt chân tới vùng biển này.'}</p>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded ${unlocked ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-700 text-slate-400'}">
+              ${unlocked ? 'Đã mở khóa' : 'Chưa khám phá'}
+            </span>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      // Wire UI Buttons
+      document.getElementById('btn-start-play').addEventListener('click', () => {
+        state.playing = true;
+        document.getElementById('modal-menu').classList.add('hidden');
+        document.getElementById('modal-menu').classList.remove('flex');
+      });
+      document.getElementById('btn-open-menu').addEventListener('click', () => toggleModal('modal-menu'));
+      document.getElementById('btn-open-map').addEventListener('click', () => toggleModal('modal-map'));
+      document.getElementById('btn-close-map').addEventListener('click', () => toggleModal('modal-map'));
+      document.getElementById('btn-open-inventory').addEventListener('click', () => toggleModal('modal-inventory'));
+      document.getElementById('btn-close-inventory').addEventListener('click', () => toggleModal('modal-inventory'));
+      document.getElementById('btn-open-settings').addEventListener('click', () => toggleModal('modal-settings'));
+      document.getElementById('btn-close-settings').addEventListener('click', () => toggleModal('modal-settings'));
+      document.getElementById('btn-open-journal').addEventListener('click', () => toggleModal('modal-journal'));
+      document.getElementById('btn-close-journal').addEventListener('click', () => toggleModal('modal-journal'));
+
+      document.getElementById('btn-mode-dive').addEventListener('click', toggleDiveMode);
+      document.getElementById('btn-toggle-fish').addEventListener('click', toggleFishingPanel);
+      document.getElementById('btn-close-fishing').addEventListener('click', toggleFishingPanel);
+      document.getElementById('btn-cast-reel').addEventListener('click', triggerFishingReel);
+      document.getElementById('btn-toggle-audio').addEventListener('click', toggleAudio);
+      document.getElementById('ctrl-brake').addEventListener('click', toggleAnchorBrake);
+      document.getElementById('btn-context-action').addEventListener('click', triggerContextAction);
+      document.getElementById('btn-build-outpost').addEventListener('click', buildResearchOutpost);
+
+      document.getElementById('btn-refuel-quick').addEventListener('click', () => {
+        state.fuel = 100;
+        state.hull = 100;
+        showToast('⛽ Đã nạp đầy 100% nhiên liệu & bảo dưỡng thân tàu!', 'emerald');
+      });
+
+      document.getElementById('btn-sell-all').addEventListener('click', () => {
+        if (state.inventory.length === 0) {
+          showToast('Kho cá đang trống!', 'amber');
+          return;
+        }
+        const total = state.inventory.reduce((acc, i) => acc + i.value, 0);
+        state.credits += total;
+        state.inventory = [];
+        playChime(820, 0.35);
+        showToast('💰 Đã bán toàn bộ hải sản thu về +' + total + '$!', 'emerald');
+        renderInventoryModal();
+        saveGameState();
+      });
+
+      document.getElementById('btn-save-game').addEventListener('click', saveGameState);
+      document.getElementById('btn-reset-game').addEventListener('click', () => {
+        try { localStorage.removeItem('ocean_infinity_save_v12'); } catch (e) {}
+        state.credits = 500;
+        state.fuel = 100;
+        state.hull = 100;
+        state.inventory = [];
+        state.collectedTreasures = [];
+        state.boat.x = 0;
+        state.boat.z = 35;
+        treasureNodes.forEach(t => { t.mesh.visible = true; });
+        updateCreditsUI();
+        showToast('🔄 Đã đặt lại thế giới đại dương về trạng thái ban đầu!', 'sky');
+      });
+
+      document.getElementById('select-weather-quick').addEventListener('change', (e) => {
+        applyWeatherPreset(e.target.value);
+      });
+
+      document.querySelectorAll('.weather-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          applyWeatherPreset(btn.getAttribute('data-weather'));
+        });
+      });
+
+      document.getElementById('slider-wave-scale').addEventListener('input', (e) => {
+        state.waveScale = parseFloat(e.target.value);
+        oceanUniforms.uWaveScale.value = state.waveScale;
+        document.getElementById('label-wave-scale').textContent = state.waveScale.toFixed(2) + 'x';
+      });
+
+      document.getElementById('slider-choppiness').addEventListener('input', (e) => {
+        state.choppiness = parseFloat(e.target.value);
+        oceanUniforms.uChoppiness.value = state.choppiness;
+        document.getElementById('label-choppiness').textContent = state.choppiness.toFixed(2);
+      });
+
+      document.getElementById('slider-sss').addEventListener('input', (e) => {
+        state.sssIntensity = parseFloat(e.target.value);
+        oceanUniforms.uSSSIntensity.value = state.sssIntensity;
+        document.getElementById('label-sss').textContent = state.sssIntensity.toFixed(2);
+      });
+
+      document.getElementById('slider-foam').addEventListener('input', (e) => {
+        state.foamIntensity = parseFloat(e.target.value);
+        oceanUniforms.uFoamIntensity.value = state.foamIntensity;
+        document.getElementById('label-foam').textContent = state.foamIntensity.toFixed(2);
+      });
+
+      document.getElementById('slider-exposure').addEventListener('input', (e) => {
+        state.exposure = parseFloat(e.target.value);
+        renderer.toneMappingExposure = state.exposure;
+        document.getElementById('label-exposure').textContent = state.exposure.toFixed(2);
+      });
+
+      document.getElementById('slider-time').addEventListener('input', (e) => {
+        state.timeOfDay = parseFloat(e.target.value);
+        updateSunPositionFromTime();
+      });
+
+      document.getElementById('toggle-auto-time').addEventListener('change', (e) => {
+        state.autoTime = e.target.checked;
+      });
+
+      document.getElementById('toggle-postfx').addEventListener('change', (e) => {
+        state.postFx = e.target.checked;
+        updatePostProcessingFilter();
+      });
+
+      document.getElementById('select-quality').addEventListener('change', (e) => {
+        const val = e.target.value;
+        const segs = val === 'extreme' ? 220 : val === 'high' ? 160 : val === 'low' ? 72 : 120;
+        buildOceanMesh(segs);
+        showToast('✨ Đã cập nhật chất lượng lưới sóng Ultra LOD (' + segs + 'x' + segs + ')', 'sky');
+      });
+
+      // ==========================================
+      // 12. MINIMAP RADAR RENDERER
+      // ==========================================
+      const minimapCanvas = document.getElementById('minimap-canvas');
+      const minimapCtx = minimapCanvas.getContext('2d');
+
+      function drawMinimap() {
+        minimapCtx.clearRect(0, 0, 80, 80);
+        minimapCtx.fillStyle = '#020b16';
+        minimapCtx.fillRect(0, 0, 80, 80);
+
+        minimapCtx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+        minimapCtx.beginPath();
+        minimapCtx.arc(40, 40, 20, 0, Math.PI * 2);
+        minimapCtx.stroke();
+        minimapCtx.beginPath();
+        minimapCtx.arc(40, 40, 36, 0, Math.PI * 2);
+        minimapCtx.stroke();
+
+        BIOMES.forEach(b => {
+          const dx = (b.x - state.boat.x) * 0.08;
+          const dz = (b.z - state.boat.z) * 0.08;
+          const mx = 40 + dx;
+          const mz = 40 + dz;
+          if (mx > 4 && mx < 76 && mz > 4 && mz < 76) {
+            minimapCtx.fillStyle = b.color;
+            minimapCtx.beginPath();
+            minimapCtx.arc(mx, mz, 3.2, 0, Math.PI * 2);
+            minimapCtx.fill();
+          }
+        });
+
+        minimapCtx.save();
+        minimapCtx.translate(40, 40);
+        minimapCtx.rotate(-state.boat.heading + Math.PI);
+        minimapCtx.fillStyle = '#ffffff';
+        minimapCtx.beginPath();
+        minimapCtx.moveTo(0, -5);
+        minimapCtx.lineTo(4, 5);
+        minimapCtx.lineTo(-4, 5);
+        minimapCtx.closePath();
+        minimapCtx.fill();
+        minimapCtx.restore();
+      }
+
+      // ==========================================
+      // 13. MAIN SIMULATION, HYDRO-SPRAY & PHYSICS LOOP
+      // ==========================================
+      let lastTime = performance.now();
+      let fpsFrames = 0;
+      let fpsTimer = performance.now();
+
+      function updateSimulation(now) {
+        requestAnimationFrame(updateSimulation);
+
+        const dt = Math.min(0.05, (now - lastTime) / 1000);
+        lastTime = now;
+        const elapsed = now * 0.001;
+
+        // FPS Counter
+        fpsFrames++;
+        if (now - fpsTimer >= 500) {
+          const fps = Math.round((fpsFrames * 1000) / (now - fpsTimer));
+          document.getElementById('hud-fps').textContent = String(Math.min(120, fps));
+          fpsFrames = 0;
+          fpsTimer = now;
+        }
+
+        if (state.autoTime) {
+          state.timeOfDay = (state.timeOfDay + dt * 0.032) % 24;
+          updateSunPositionFromTime();
+        }
+
+        // Update Shader Uniforms
+        oceanUniforms.uTime.value = elapsed;
+        skyUniforms.uTime.value = elapsed;
+        seabedUniforms.uTime.value = elapsed;
+        oceanMesh.position.x = state.boat.x;
+        oceanMesh.position.z = state.boat.z;
+        skyDome.position.copy(camera.position);
+
+        // Rotate Lighthouse Volumetric Beam
+        if (lighthouseRotor) {
+          lighthouseRotor.rotation.y = elapsed * 0.75;
+        }
+
+        // Storm Lightning Flashes
+        if (state.weather === 'storm') {
+          if (Math.random() < 0.015) {
+            lightningLight.intensity = 10 + Math.random() * 14;
+            lightningLight.position.set(state.boat.x + (Math.random() - 0.5) * 300, 260, state.boat.z + (Math.random() - 0.5) * 300);
+          } else {
+            lightningLight.intensity *= 0.82;
+          }
+        } else {
+          lightningLight.intensity = 0;
+        }
+
+        // Fishing Mini-game bar oscillation
+        if (state.fishing.active) {
+          state.fishing.cursor += state.fishing.dir * dt * 68;
+          if (state.fishing.cursor >= 94) { state.fishing.cursor = 94; state.fishing.dir = -1; }
+          if (state.fishing.cursor <= 4)  { state.fishing.cursor = 4;  state.fishing.dir = 1; }
+          document.getElementById('fishing-cursor').style.left = state.fishing.cursor + '%';
+        }
+
+        // Boat & Diver Physics
+        const speedMultiplier = 1 + (state.upgrades.engine - 1) * 0.25;
+        const maxThrust = 34 * speedMultiplier;
+
+        if (state.mode === 'boat') {
+          if (!state.boat.anchored && state.fuel > 0) {
+            if (keys.up) {
+              state.boat.throttle = Math.min(1.0, state.boat.throttle + dt * 1.4);
+            } else if (keys.down) {
+              state.boat.throttle = Math.max(-0.45, state.boat.throttle - dt * 1.4);
+            } else {
+              state.boat.throttle *= 0.96;
+            }
+          } else {
+            state.boat.throttle *= 0.85;
+          }
+
+          const turnAuthority = 1.35 * (0.35 + Math.min(1, Math.abs(state.boat.speed) / 8));
+          if (keys.left) state.boat.angularVel += turnAuthority * dt * 2.4;
+          if (keys.right) state.boat.angularVel -= turnAuthority * dt * 2.4;
+          state.boat.angularVel *= 0.88;
+          state.boat.heading += state.boat.angularVel * dt;
+
+          const forwardX = -Math.sin(state.boat.heading);
+          const forwardZ = -Math.cos(state.boat.heading);
+
+          const accel = state.boat.throttle * maxThrust;
+          state.boat.vx += forwardX * accel * dt;
+          state.boat.vz += forwardZ * accel * dt;
+
+          state.boat.vx *= (1 - 1.25 * dt);
+          state.boat.vz *= (1 - 1.25 * dt);
+
+          const nextX = state.boat.x + state.boat.vx * dt;
+          const nextZ = state.boat.z + state.boat.vz * dt;
+
+          let collided = false;
+          for (let i = 0; i < colliders.length; i++) {
+            const c = colliders[i];
+            const dist = Math.hypot(nextX - c.x, nextZ - c.z);
+            if (dist < c.r + 3.2) {
+              collided = true;
+              const nx = (nextX - c.x) / (dist || 1);
+              const nz = (nextZ - c.z) / (dist || 1);
+              state.boat.vx = nx * 6;
+              state.boat.vz = nz * 6;
+              state.hull = Math.max(10, state.hull - (2.5 / state.upgrades.hull));
+              break;
+            }
+          }
+
+          if (!collided) {
+            state.boat.x = nextX;
+            state.boat.z = nextZ;
+          }
+
+          state.boat.speed = Math.hypot(state.boat.vx, state.boat.vz);
+
+          if (Math.abs(state.boat.throttle) > 0.05) {
+            const drain = (0.32 / state.upgrades.tank) * dt;
+            state.fuel = Math.max(0, state.fuel - drain);
+          }
+
+          // Multi-Point Hydrostatic Buoyancy
+          const sinH = Math.sin(state.boat.heading);
+          const cosH = Math.cos(state.boat.heading);
+          const bowH = sampleOceanHeight(state.boat.x - sinH * 4.2, state.boat.z - cosH * 4.2, elapsed);
+          const sternH = sampleOceanHeight(state.boat.x + sinH * 4.2, state.boat.z + cosH * 4.2, elapsed);
+          const portH = sampleOceanHeight(state.boat.x - cosH * 1.9, state.boat.z + sinH * 1.9, elapsed);
+          const starH = sampleOceanHeight(state.boat.x + cosH * 1.9, state.boat.z - sinH * 1.9, elapsed);
+
+          const avgWaveY = (bowH + sternH + portH + starH) * 0.25;
+          state.boat.y += (avgWaveY - state.boat.y) * 0.18;
+
+          const targetPitch = Math.atan2(bowH - sternH, 8.4);
+          const targetRoll = Math.atan2(portH - starH, 3.8) - state.boat.angularVel * 0.12;
+          state.boat.pitch += (targetPitch - state.boat.pitch) * 0.16;
+          state.boat.roll += (targetRoll - state.boat.roll) * 0.16;
+
+          boatGroup.position.set(state.boat.x, state.boat.y, state.boat.z);
+          boatGroup.rotation.order = 'YXZ';
+          boatGroup.rotation.y = state.boat.heading;
+          boatGroup.rotation.x = state.boat.pitch;
+          boatGroup.rotation.z = state.boat.roll;
+
+          if (boatWakeRibbon) {
+            boatWakeRibbon.material.opacity = Math.min(0.55, state.boat.speed * 0.035);
+          }
+
+          oceanUniforms.uBoatPos.value.copy(boatGroup.position);
+          oceanUniforms.uBoatVel.value.set(state.boat.vx, state.boat.vz);
+
+          // Update Bow Hydro-Spray Particles
+          const sprayAttr = sprayGeo.attributes.position;
+          const bowWorldX = state.boat.x - sinH * 5.8;
+          const bowWorldZ = state.boat.z - cosH * 5.8;
+          for (let i = 0; i < sprayCount; i++) {
+            const p = sprayVelocities[i];
+            p.life += dt * (1.5 + state.boat.speed * 0.08);
+            if (p.life >= 1.0) {
+              if (state.boat.speed > 2.2) {
+                p.life = 0;
+                const side = (i % 2 === 0 ? 1 : -1);
+                sprayAttr.setXYZ(i, bowWorldX + (Math.random() - 0.5) * 1.2, state.boat.y + 0.5, bowWorldZ + (Math.random() - 0.5) * 1.2);
+                p.vx = (cosH * side * (2.5 + Math.random() * 2.5)) + state.boat.vx * 0.35;
+                p.vy = 2.2 + Math.random() * 2.8 + state.boat.speed * 0.15;
+                p.vz = (-sinH * side * (2.5 + Math.random() * 2.5)) + state.boat.vz * 0.35;
+              } else {
+                sprayAttr.setY(i, -50);
+              }
+            } else {
+              const cx = sprayAttr.getX(i) + p.vx * dt;
+              const cy = sprayAttr.getY(i) + p.vy * dt;
+              const cz = sprayAttr.getZ(i) + p.vz * dt;
+              p.vy -= 9.8 * dt;
+              sprayAttr.setXYZ(i, cx, cy, cz);
+            }
+          }
+          sprayAttr.needsUpdate = true;
+        } else {
+          // Scuba Diving Controls
+          if (keys.left) state.boat.heading += 1.6 * dt;
+          if (keys.right) state.boat.heading -= 1.6 * dt;
+          const fx = -Math.sin(state.boat.heading);
+          const fz = -Math.cos(state.boat.heading);
+          if (keys.up) {
+            state.diver.x += fx * 12 * dt;
+            state.diver.z += fz * 12 * dt;
+            state.diver.y = Math.max(-26, state.diver.y - Math.sin(state.camera.pitch) * 8 * dt);
+          }
+          if (keys.down) {
+            state.diver.x -= fx * 8 * dt;
+            state.diver.z -= fz * 8 * dt;
+            state.diver.y = Math.min(-1.5, state.diver.y + 6 * dt);
+          }
+          state.boat.x = state.diver.x;
+          state.boat.z = state.diver.z;
+          diverGroup.position.set(state.diver.x, state.diver.y, state.diver.z);
+          diverGroup.rotation.y = state.boat.heading;
+        }
+
+        // Update Audio Engine Pitch
+        if (state.audio.enabled && state.audio.engineOsc) {
+          const targetFreq = 42 + state.boat.speed * 3.2;
+          state.audio.engineOsc.frequency.value = targetFreq;
+          state.audio.waveGain.gain.value = Math.min(0.28, 0.10 + state.waveScale * 0.08);
+        }
+
+        // Update Marine Wildlife & Seagull AI
+        for (let i = 0; i < wildlifeAgents.length; i++) {
+          const ag = wildlifeAgents[i];
+          ag.angle += (ag.speed / ag.radius) * dt * 12;
+          const wx = ag.cx + Math.cos(ag.angle) * ag.radius;
+          const wz = ag.cz + Math.sin(ag.angle) * ag.radius;
+          let wy = ag.depth;
+
+          if (ag.type === 'dolphin') {
+            const leap = Math.sin(elapsed * 2.6 + ag.phase);
+            wy = leap > 0.2 ? leap * 3.8 : -1.2;
+            ag.mesh.rotation.x = Math.PI / 2 - Math.cos(elapsed * 2.6 + ag.phase) * 0.45;
+          } else if (ag.type === 'shark') {
+            wy = sampleOceanHeight(wx, wz, elapsed) - 0.55;
+          } else if (ag.type === 'whale') {
+            wy = sampleOceanHeight(wx, wz, elapsed) - 1.1 + Math.sin(elapsed * 0.8) * 0.9;
+          } else if (ag.type === 'seagull') {
+            wy = ag.depth + Math.sin(elapsed * 1.5 + ag.phase) * 1.8;
+            const flap = Math.sin(elapsed * 9.0 + ag.phase) * 0.45;
+            ag.wingL.rotation.z = flap;
+            ag.wingR.rotation.z = -flap;
+          } else {
+            wy = ag.depth + Math.sin(elapsed * 2.0 + ag.phase) * 0.6;
+          }
+
+          ag.mesh.position.set(wx, wy, wz);
+          ag.mesh.rotation.y = -ag.angle;
+        }
+
+        // Animate Treasure Chests & Check Proximity
+        activeNearbyTreasure = null;
+        for (let i = 0; i < treasureNodes.length; i++) {
+          const t = treasureNodes[i];
+          if (state.collectedTreasures.includes(t.id)) continue;
+          const th = sampleOceanHeight(t.x, t.z, elapsed);
+          t.mesh.position.y = th + 0.35;
+          t.mesh.rotation.y += dt * 1.2;
+
+          const dist = Math.hypot(state.boat.x - t.x, state.boat.z - t.z);
+          if (dist < 24) {
+            activeNearbyTreasure = t;
+          }
+        }
+
+        const contextBar = document.getElementById('context-action-bar');
+        if (activeNearbyTreasure) {
+          contextBar.classList.remove('hidden');
+          document.getElementById('context-action-text').textContent = '✨ Nhấn [E] hoặc chạm để trục vớt ' + activeNearbyTreasure.name + ' (+' + activeNearbyTreasure.reward + '$)';
+        } else {
+          contextBar.classList.add('hidden');
+        }
+
+        // Follow Camera Calculation
+        const focusPos = state.mode === 'boat' ? boatGroup.position : diverGroup.position;
+        const camYaw = state.boat.heading + state.camera.yaw;
+        const camDist = state.mode === 'boat' ? state.camera.distance : 12;
+        const camX = focusPos.x + Math.sin(camYaw) * Math.cos(state.camera.pitch) * camDist;
+        const camZ = focusPos.z + Math.cos(camYaw) * Math.cos(state.camera.pitch) * camDist;
+        let camY = focusPos.y + Math.sin(state.camera.pitch) * camDist + 3.2;
+
+        if (state.mode === 'boat') {
+          const surfUnderCam = sampleOceanHeight(camX, camZ, elapsed);
+          camY = Math.max(surfUnderCam + 1.8, camY);
+        }
+
+        camera.position.set(camX, camY, camZ);
+        camera.lookAt(focusPos.x, focusPos.y + 1.4, focusPos.z);
+
+        // Keep plankton & God Rays centered around player
+        planktonPoints.position.set(focusPos.x, 0, focusPos.z);
+        godRaysGroup.position.set(focusPos.x, 0, focusPos.z);
+
+        // Update HUD Telemetry
+        const knots = (state.boat.speed * 1.35).toFixed(1);
+        document.getElementById('hud-speed').textContent = knots;
+        document.getElementById('hud-wave-height').textContent = (1.2 * state.waveScale).toFixed(1) + 'm';
+        document.getElementById('hud-fuel-text').textContent = Math.round(state.fuel) + '%';
+        document.getElementById('hud-fuel-bar').style.width = state.fuel + '%';
+        document.getElementById('hud-hull-text').textContent = Math.round(state.hull) + '%';
+        document.getElementById('hud-hull-bar').style.width = state.hull + '%';
+
+        const headingDeg = ((Math.round((-state.boat.heading * 180) / Math.PI) % 360) + 360) % 360;
+        const dirs = ['B (N)', 'ĐB (NE)', 'Đ (E)', 'ĐN (SE)', 'N (S)', 'TN (SW)', 'T (W)', 'TB (NW)'];
+        const dirLabel = dirs[Math.round(headingDeg / 45) % 8];
+        document.getElementById('hud-compass').textContent = String(headingDeg).padStart(3, '0') + '° ' + dirLabel;
+        document.getElementById('hud-coords').textContent = 'X: ' + Math.round(state.boat.x) + ', Z: ' + Math.round(state.boat.z);
+
+        const curBiome = getCurrentBiome();
+        document.getElementById('hud-biome').textContent = curBiome.name;
+        if (!state.discoveredBiomes.includes(curBiome.id) && Math.hypot(state.boat.x - curBiome.x, state.boat.z - curBiome.z) < curBiome.radius) {
+          state.discoveredBiomes.push(curBiome.id);
+          showToast('🗺️ Đã khám phá vùng biển mới: ' + curBiome.name + '!', 'sky');
+        }
+
+        const depthVal = state.mode === 'dive' ? Math.abs(state.diver.y).toFixed(1) : Math.abs(curBiome.depth).toFixed(1);
+        document.getElementById('hud-depth').textContent = 'Độ sâu: ' + depthVal + 'm';
+
+        drawMinimap();
+        renderer.render(scene, camera);
+      }
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      window.onload = () => {
+        loadSavedState();
+        updateCreditsUI();
+        state.outposts.forEach(o => spawnOutpostMesh(o.x, o.z));
+        treasureNodes.forEach(t => {
+          if (state.collectedTreasures.includes(t.id)) t.mesh.visible = false;
+        });
+        applyWeatherPreset('sunny');
+        requestAnimationFrame(updateSimulation);
+      };
+    })();
+  </script>
+</body>
+</html>
