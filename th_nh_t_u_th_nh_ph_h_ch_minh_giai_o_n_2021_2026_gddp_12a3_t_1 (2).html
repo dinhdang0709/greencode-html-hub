@@ -1,0 +1,2806 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thành Tựu Thành Phố Hồ Chí Minh Giai Đoạn 2021 – 2026 | GDDP 12A3 - Tổ 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Playfair+Display:ital,wght@0,700;0,800;1,600&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================================================
+       1. HỆ THỐNG BIẾN MÀU SẮC & TYPOGRAPHY CHUẨN 16:9 (1600x900, CỠ CHỮ 20PX)
+       ========================================================================== */
+    :root {
+      --bg-stage: #090d16;
+      --slide-bg-light: #f8fafc;
+      --slide-bg-cream: #fdfbf7;
+      --slide-bg-dark: #0b192c;
+      --slide-bg-crimson: #7c0a02;
+      --primary-navy: #0f2547;
+      --primary-blue: #0284c7;
+      --accent-red: #da251d;
+      --accent-gold: #d97706;
+      --accent-gold-bright: #ffcd00;
+      --accent-teal: #0d9488;
+      --accent-emerald: #059669;
+      --text-main: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --text-light: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --shadow-sm: 0 3px 10px rgba(15, 37, 71, 0.06);
+      --shadow-md: 0 8px 22px rgba(15, 37, 71, 0.11);
+      --shadow-lg: 0 16px 36px rgba(15, 37, 71, 0.18);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --font-sans: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --body-size: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-stage);
+      font-family: var(--font-sans);
+      font-size: var(--body-size);
+      color: var(--text-main);
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    [contenteditable="true"] {
+      user-select: text;
+      cursor: text;
+      outline: none;
+      border-bottom: 1px dashed rgba(218, 37, 29, 0.45);
+      transition: all 0.2s ease;
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+    [contenteditable="true"]:hover,
+    [contenteditable="true"]:focus {
+      background: rgba(255, 205, 0, 0.18);
+      border-bottom-color: var(--accent-red);
+    }
+
+    /* ==========================================================================
+       2. KHUNG TRÌNH CHIẾU 16:9 TỰ ĐỘNG CO GIÃN (1600 x 900)
+       ========================================================================== */
+    #viewport-wrapper {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 30%, #172554 0%, #090d16 78%);
+    }
+
+    #presentation-stage {
+      width: 1600px;
+      height: 900px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      transform-origin: center center;
+      overflow: hidden;
+      background: var(--slide-bg-light);
+      box-shadow: 0 22px 65px rgba(0, 0, 0, 0.68);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    /* ==========================================================================
+       3. HỆ THỐNG SLIDE & HIỆU ỨNG CHUYỂN CẢNH
+       ========================================================================== */
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 1600px;
+      height: 900px;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 34px 52px 26px 52px;
+      background: var(--slide-bg-light);
+      transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                  clip-path 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 10;
+      transform: translate3d(0, 0, 0) scale(1);
+      clip-path: inset(0 0 0 0);
+    }
+
+    .slide[data-transition="slide"].prev-slide { transform: translate3d(-65px, 0, 0); }
+    .slide[data-transition="slide"].next-slide { transform: translate3d(65px, 0, 0); }
+    .slide[data-transition="zoom"].prev-slide { transform: scale(1.06); }
+    .slide[data-transition="zoom"].next-slide { transform: scale(0.94); }
+    .slide[data-transition="reveal"].next-slide { clip-path: inset(0 0 0 100%); }
+    .slide[data-transition="reveal"].prev-slide { clip-path: inset(0 100% 0 0); }
+    .slide[data-transition="morph"].prev-slide { transform: translate3d(0, -32px, 0) scale(0.97); }
+    .slide[data-transition="morph"].next-slide { transform: translate3d(0, 32px, 0) scale(1.03); }
+
+    .anim-item {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .slide.active .anim-item {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .slide.active .delay-1 { transition-delay: 0.06s; }
+    .slide.active .delay-2 { transition-delay: 0.12s; }
+    .slide.active .delay-3 { transition-delay: 0.18s; }
+    .slide.active .delay-4 { transition-delay: 0.24s; }
+    .slide.active .delay-5 { transition-delay: 0.30s; }
+
+    /* ==========================================================================
+       4. HỌA TIẾT NHẬN DIỆN VIỆT NAM
+       ========================================================================== */
+    .dong-son-watermark {
+      position: absolute;
+      width: 560px;
+      height: 560px;
+      pointer-events: none;
+      opacity: 0.045;
+      z-index: 0;
+      animation: rotateSlow 95s linear infinite;
+    }
+    .dong-son-watermark.dark-bg {
+      opacity: 0.085;
+    }
+    @keyframes rotateSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .vn-flag-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(218, 37, 29, 0.25);
+      padding: 6px 14px 6px 8px;
+      border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .vn-flag-svg {
+      width: 28px;
+      height: 19px;
+      border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       5. HEADER & FOOTER CHUẨN TRÊN MỖI SLIDE NỘI DUNG
+       ========================================================================== */
+    .slide-header {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 2px solid rgba(15, 37, 71, 0.09);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+    .slide-header-left {
+      flex: 1;
+      min-width: 0;
+    }
+    .section-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--accent-red);
+      margin-bottom: 4px;
+    }
+    .section-kicker .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      display: inline-block;
+    }
+    .slide-title {
+      font-size: 29px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      line-height: 1.22;
+      letter-spacing: -0.015em;
+    }
+    .slide-subtitle {
+      font-size: 20px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      font-weight: 500;
+      line-height: 1.35;
+    }
+    .slide-body {
+      position: relative;
+      z-index: 5;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+      width: 100%;
+    }
+    .slide-footer {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding-top: 10px;
+      margin-top: 12px;
+      border-top: 1px solid rgba(15, 37, 71, 0.08);
+      font-size: 14px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .source-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .source-links a {
+      color: var(--primary-blue);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.15s;
+    }
+    .source-links a:hover {
+      color: var(--accent-red);
+      text-decoration: underline;
+    }
+
+    /* ==========================================================================
+       6. BỐ CỤC LƯỚI, THẺ & CỠ CHỮ 20PX ĐỒNG NHẤT
+       ========================================================================== */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      height: 100%;
+      width: 100%;
+      align-items: stretch;
+    }
+    .grid-12 {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 20px;
+      height: 100%;
+      width: 100%;
+      align-items: stretch;
+    }
+    .col-3 { grid-column: span 3; min-width: 0; }
+    .col-4 { grid-column: span 4; min-width: 0; }
+    .col-5 { grid-column: span 5; min-width: 0; }
+    .col-6 { grid-column: span 6; min-width: 0; }
+    .col-7 { grid-column: span 7; min-width: 0; }
+    .col-8 { grid-column: span 8; min-width: 0; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      min-width: 0;
+      font-size: 20px;
+    }
+    .card.accent-top-red { border-top: 4px solid var(--accent-red); }
+    .card.accent-top-navy { border-top: 4px solid var(--primary-navy); }
+    .card.accent-top-gold { border-top: 4px solid var(--accent-gold); }
+    .card.accent-top-teal { border-top: 4px solid var(--accent-teal); }
+
+    .card h3, .card h4 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      line-height: 1.28;
+    }
+    .card p {
+      font-size: 20px;
+      line-height: 1.42;
+      color: var(--text-secondary);
+    }
+
+    .photo-frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: #1e293b;
+      box-shadow: var(--shadow-md);
+      min-height: 0;
+    }
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform 0.65s ease;
+    }
+    .photo-frame:hover img {
+      transform: scale(1.03);
+    }
+    .photo-badge {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      background: rgba(11, 25, 44, 0.88);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 8px 13px;
+      border-radius: 8px;
+      border-left: 3px solid var(--accent-gold-bright);
+      font-size: 15px;
+      line-height: 1.35;
+    }
+    .photo-badge strong {
+      display: block;
+      color: var(--accent-gold-bright);
+      font-size: 16px;
+      margin-bottom: 1px;
+    }
+
+    .kpi-value {
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--primary-navy);
+    }
+    .kpi-value.red { color: var(--accent-red); }
+    .kpi-value.blue { color: var(--primary-blue); }
+    .kpi-value.gold { color: var(--accent-gold); }
+    .kpi-value.emerald { color: var(--accent-emerald); }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 4px 11px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      width: fit-content;
+    }
+    .status-pill.completed {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #86efac;
+    }
+    .status-pill.under-construction {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+    .status-pill.planned {
+      background: #e0f2fe;
+      color: #075985;
+      border: 1px solid #bae6fd;
+    }
+
+    /* Section Divider Slide */
+    .section-divider-slide {
+      padding: 0;
+      background: var(--slide-bg-dark);
+      color: var(--text-light);
+    }
+    .section-divider-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.34;
+      filter: contrast(1.08) saturate(1.1);
+    }
+    .section-divider-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, rgba(11, 25, 44, 0.96) 0%, rgba(11, 25, 44, 0.82) 55%, rgba(124, 10, 2, 0.68) 100%);
+      z-index: 2;
+    }
+    .section-divider-content {
+      position: relative;
+      z-index: 5;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 64px 86px;
+    }
+    .part-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(218, 37, 29, 0.92);
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      width: fit-content;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 20px rgba(218, 37, 29, 0.4);
+    }
+    .section-divider-title {
+      font-family: var(--font-serif);
+      font-size: 54px;
+      font-weight: 800;
+      line-height: 1.16;
+      max-width: 1180px;
+      color: #ffffff;
+      margin-bottom: 20px;
+    }
+    .section-divider-desc {
+      font-size: 21px;
+      line-height: 1.55;
+      max-width: 1020px;
+      color: #cbd5e1;
+      margin-bottom: 36px;
+    }
+    .section-subitems-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      width: 100%;
+    }
+    .section-subitem-box {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-left: 4px solid var(--accent-gold-bright);
+      padding: 18px 22px;
+      border-radius: 12px;
+    }
+    .section-subitem-box .code {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--accent-gold-bright);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+    .section-subitem-box .name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 6px;
+      line-height: 1.38;
+    }
+
+    /* ==========================================================================
+       7. SLIDE GIỚI THIỆU THÀNH VIÊN ĐẶC SẮC, SIÊU ẤN TƯỢNG (SLIDE 2)
+       ========================================================================== */
+    .member-showcase-slide {
+      padding: 36px 52px 26px 52px;
+      background: radial-gradient(circle at 18% 20%, #1e3a8a 0%, #0b192c 48%, #050a14 100%);
+      color: #ffffff;
+    }
+    .member-grid-6 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      flex: 1;
+      min-height: 0;
+    }
+    .member-card {
+      position: relative;
+      background: linear-gradient(155deg, rgba(255, 255, 255, 0.12) 0%, rgba(15, 37, 71, 0.55) 100%);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 18px;
+      padding: 20px 16px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                  border-color 0.35s ease,
+                  box-shadow 0.35s ease,
+                  background 0.35s ease;
+      overflow: hidden;
+    }
+    .member-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 205, 0, 0.18), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+    .member-card:hover,
+    .member-card.spotlight {
+      transform: translateY(-8px) scale(1.03);
+      border-color: var(--accent-gold-bright);
+      background: linear-gradient(155deg, rgba(255, 205, 0, 0.22) 0%, rgba(218, 37, 29, 0.25) 100%);
+      box-shadow: 0 18px 40px rgba(255, 205, 0, 0.26), 0 0 0 2px rgba(255, 205, 0, 0.45);
+    }
+    .member-card:hover::before,
+    .member-card.spotlight::before {
+      opacity: 1;
+    }
+    .member-num-badge {
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--accent-gold-bright);
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 205, 0, 0.4);
+      padding: 3px 9px;
+      border-radius: 999px;
+      letter-spacing: 0.05em;
+    }
+    .member-avatar {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 900;
+      color: #ffffff;
+      margin-top: 14px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.38), inset 0 0 0 3px rgba(255, 255, 255, 0.35);
+      transition: transform 0.35s ease;
+      position: relative;
+      z-index: 2;
+    }
+    .member-card:hover .member-avatar,
+    .member-card.spotlight .member-avatar {
+      transform: scale(1.1) rotate(-4deg);
+      box-shadow: 0 10px 26px rgba(255, 205, 0, 0.4), inset 0 0 0 3px var(--accent-gold-bright);
+    }
+    .member-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
+      margin: 10px 0 6px 0;
+      position: relative;
+      z-index: 2;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+    .member-tag {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fde68a;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ==========================================================================
+       8. HỆ THỐNG ĐIỀU KHIỂN TRÌNH CHIẾU (HUD CONTROLS & OVERVIEW MODAL)
+       ========================================================================== */
+    #top-right-controls {
+      position: fixed;
+      top: 10px;
+      right: 16px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(11, 25, 44, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 4px 8px;
+      border-radius: 999px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+      transition: opacity 0.35s ease;
+    }
+    body.fullscreen-idle #top-right-controls { opacity: 0.12; }
+    #top-right-controls:hover { opacity: 1 !important; }
+    body.is-fullscreen #top-right-controls {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      top: 8px;
+      right: 12px;
+    }
+    body.is-fullscreen #btn-prev,
+    body.is-fullscreen #slide-counter,
+    body.is-fullscreen #btn-next,
+    body.is-fullscreen #btn-overview {
+      display: none;
+    }
+    body.is-fullscreen #btn-fullscreen {
+      font-size: 11px;
+      padding: 4px 10px;
+      background: rgba(11, 25, 44, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+      opacity: 0.75;
+    }
+    body.is-fullscreen #btn-fullscreen:hover {
+      opacity: 1;
+      background: rgba(218, 37, 29, 0.9);
+    }
+
+    .ctrl-btn {
+      background: transparent;
+      border: none;
+      color: #e2e8f0;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 6px 11px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .ctrl-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+    }
+    .ctrl-btn.primary-present {
+      background: linear-gradient(135deg, #da251d 0%, #b91c1c 100%);
+      color: #ffffff;
+      font-weight: 700;
+      padding: 6px 14px;
+      box-shadow: 0 2px 10px rgba(218, 37, 29, 0.45);
+    }
+    .ctrl-btn.primary-present:hover {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      transform: translateY(-1px);
+    }
+
+    #slide-counter {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--accent-gold-bright);
+      padding: 0 6px;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+    }
+
+    #progress-bar-track {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.12);
+      z-index: 1000;
+    }
+    #progress-bar-fill {
+      height: 100%;
+      width: 5.88%;
+      background: linear-gradient(90deg, var(--accent-red), var(--accent-gold-bright));
+      transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    #overview-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 13, 22, 0.94);
+      backdrop-filter: blur(14px);
+      z-index: 2000;
+      display: none;
+      flex-direction: column;
+      padding: 28px 44px;
+      overflow-y: auto;
+    }
+    #overview-modal.open { display: flex; }
+    .overview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .overview-item {
+      background: rgba(30, 41, 59, 0.85);
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #f8fafc;
+      text-align: left;
+    }
+    .overview-item:hover,
+    .overview-item.active-thumb {
+      border-color: var(--accent-gold-bright);
+      background: rgba(15, 37, 71, 0.95);
+      transform: translateY(-2px);
+    }
+    .overview-item .num {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent-gold-bright);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .overview-item .ttl {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 4px;
+    }
+    .overview-item .part {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    /* ==========================================================================
+       9. THÀNH PHẦN TƯƠNG TÁC TRONG SLIDE
+       ========================================================================== */
+    .interactive-tabs {
+      display: inline-flex;
+      background: #e2e8f0;
+      padding: 4px;
+      border-radius: 10px;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .tab-btn {
+      border: none;
+      background: transparent;
+      padding: 7px 14px;
+      border-radius: 7px;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: var(--primary-navy);
+      color: #ffffff;
+      box-shadow: 0 2px 5px rgba(15, 37, 71, 0.2);
+    }
+
+    .toc-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 20px 24px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      min-width: 0;
+    }
+    .toc-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-blue);
+    }
+    .toc-number {
+      font-size: 38px;
+      font-weight: 900;
+      color: rgba(15, 37, 71, 0.07);
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .bar-chart-wrap {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 250px;
+      padding: 32px 14px 8px 14px;
+      border-bottom: 2px solid #cbd5e1;
+      gap: 14px;
+    }
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      min-width: 0;
+    }
+    .bar-fill {
+      width: 100%;
+      max-width: 68px;
+      border-radius: 6px 6px 0 0;
+      transition: height 0.75s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s;
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .bar-val {
+      position: absolute;
+      top: -28px;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      white-space: nowrap;
+    }
+    .bar-year {
+      margin-top: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .timeline-track {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      position: relative;
+      margin-top: 4px;
+    }
+    .timeline-node {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-top: 4px solid var(--primary-blue);
+      border-radius: 10px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow-sm);
+      min-width: 0;
+    }
+    .timeline-node.highlight {
+      border-top-color: var(--accent-red);
+      background: #fffbeb;
+    }
+
+    /* Danh sách chuẩn cỡ chữ 20px */
+    .clean-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .clean-list li {
+      position: relative;
+      padding-left: 20px;
+      font-size: 20px;
+      line-height: 1.4;
+      color: var(--text-secondary);
+    }
+    .clean-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-red);
+    }
+    .clean-list li strong {
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- THANH ĐIỀU KHIỂN TRÌNH CHIẾU -->
+  <div id="top-right-controls" role="toolbar" aria-label="Điều khiển trình chiếu">
+    <button class="ctrl-btn" id="btn-prev" title="Slide trước (Mũi tên trái)">◀ Trước</button>
+    <span id="slide-counter">01 / 19</span>
+    <button class="ctrl-btn" id="btn-next" title="Slide tiếp theo (Mũi tên phải / Space)">Tiếp ▶</button>
+    <button class="ctrl-btn" id="btn-overview" title="Xem toàn bộ 19 Slide (Phím G)">⊞ Mục lục Slide</button>
+    <button class="ctrl-btn primary-present" id="btn-fullscreen" title="Bật/Tắt chế độ Trình chiếu Toàn màn hình (Phím F)">▶ Trình Chiếu</button>
+  </div>
+
+  <div id="progress-bar-track">
+    <div id="progress-bar-fill"></div>
+  </div>
+
+  <!-- BẢNG CHỌN NHANH 17 SLIDE -->
+  <div id="overview-modal" aria-hidden="true">
+    <div class="overview-header">
+      <div>
+        <h2 style="font-size: 22px; font-weight: 800;">DANH MỤC 19 SLIDE THUYẾT TRÌNH</h2>
+        <p style="font-size: 14px; color: #cbd5e1; margin-top: 3px;">Nhấp vào bất kỳ slide nào để chuyển nhanh hoặc nhấn phím ESC để đóng</p>
+      </div>
+      <button class="ctrl-btn primary-present" id="btn-close-overview">✕ Đóng bảng chọn</button>
+    </div>
+    <div class="overview-grid" id="overview-grid-container"></div>
+  </div>
+
+  <!-- ==========================================================================
+       KHUNG TRÌNH CHIẾU CHÍNH 16:9 (1600 x 900)
+       ========================================================================== -->
+  <div id="viewport-wrapper">
+    <main id="presentation-stage">
+
+      <svg style="display:none;" aria-hidden="true">
+        <symbol id="vn-flag-symbol" viewBox="0 0 30 20">
+          <rect width="30" height="20" fill="#da251d" />
+          <polygon fill="#ffcd00" points="15,4 16.347,8.146 20.706,8.146 17.18,10.708 18.527,14.854 15,12.292 11.473,14.854 12.82,10.708 9.294,8.146 13.653,8.146" />
+        </symbol>
+        <symbol id="dong-son-symbol" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="96" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <circle cx="100" cy="100" r="82" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="100" cy="100" r="64" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="8 4"/>
+          <circle cx="100" cy="100" r="46" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="100" cy="100" r="28" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <g stroke="currentColor" stroke-width="1.5" fill="none">
+            <line x1="100" y1="4" x2="100" y2="196" />
+            <line x1="4" y1="100" x2="196" y2="100" />
+            <line x1="32" y1="32" x2="168" y2="168" />
+            <line x1="168" y1="32" x2="32" y2="168" />
+          </g>
+        </symbol>
+      </svg>
+
+      <!-- ======================================================================
+           SLIDE 1: TRANG BÌA
+           ====================================================================== -->
+      <section class="slide active" data-index="0" data-transition="zoom" data-title="Trang bìa: Thành tựu TP.HCM 2021–2026" data-part="Mở đầu" style="padding: 0; background: #071120; color: #ffffff;">
+        <canvas id="cover-particles" width="1600" height="900" style="position:absolute; inset:0; z-index:1; pointer-events:none;"></canvas>
+        <svg class="dong-son-watermark dark-bg" style="left: -120px; top: -120px; color: #ffcd00;"><use href="#dong-son-symbol"></use></svg>
+
+        <div style="position:relative; z-index:5; display:grid; grid-template-columns: 7.4fr 4.6fr; height:100%; width:100%;">
+          <div style="padding: 54px 46px 48px 66px; display:flex; flex-direction:column; justify-content:space-between; min-width:0;">
+            <div class="anim-item delay-1" style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+              <span class="vn-flag-badge" style="background:rgba(255,255,255,0.12); color:#fff; border-color:rgba(255,205,0,0.4);">
+                <svg class="vn-flag-svg"><use href="#vn-flag-symbol"></use></svg>
+                CHUYÊN ĐỀ GDDP 12A3 • KINH TẾ – XÃ HỘI &amp; ĐÔ THỊ
+              </span>
+              <span style="font-size:15px; font-weight:700; color:#ffcd00; letter-spacing:0.08em;">GIAI ĐOẠN 2021 – 2026</span>
+            </div>
+
+            <div class="anim-item delay-2" style="margin: 10px 0;">
+              <div style="font-size:16px; font-weight:800; color:#38bdf8; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:12px;">
+                BÁO CÁO TỔNG HỢP &amp; PHÂN TÍCH DỮ LIỆU CHÍNH THỐNG
+              </div>
+              <h1 style="font-family:var(--font-serif); font-size:56px; font-weight:800; line-height:1.14; color:#ffffff; margin-bottom:18px;">
+                THÀNH TỰU<br/>
+                <span style="color:#ffcd00;">THÀNH PHỐ HỒ CHÍ MINH</span><br/>
+                GIAI ĐOẠN 2021 – 2026
+              </h1>
+              <p style="font-size:20px; line-height:1.52; color:#cbd5e1; max-width:860px;">
+                Hành trình vượt bão COVID-19 (2021), đột phá cơ chế Nghị quyết 98, vận hành Metro số 1 &amp; Nhà ga T3 đến bước ngoặt hợp nhất <strong>Siêu đô thị trên 14 triệu dân</strong> (01/07/2025) và tăng tốc bứt phá năm 2026.
+              </p>
+            </div>
+
+            <div class="anim-item delay-3" style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:16px; margin-bottom:14px;">
+              <div style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-left:4px solid #ffcd00; padding:14px 18px; border-radius:12px;">
+                <div style="font-size:28px; font-weight:900; color:#ffcd00;">+9,06%</div>
+                <div style="font-size:16px; color:#cbd5e1; margin-top:3px;">GRDP 9T/2026 (Đỉnh 10 năm)</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-left:4px solid #38bdf8; padding:14px 18px; border-radius:12px;">
+                <div style="font-size:28px; font-weight:900; color:#38bdf8;">&gt;800.000 Tỷ</div>
+                <div style="font-size:16px; color:#cbd5e1; margin-top:3px;">Thu ngân sách 2025 số 1 cả nước</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-left:4px solid #ef4444; padding:14px 18px; border-radius:12px;">
+                <div style="font-size:28px; font-weight:900; color:#f87171;">6.772 km²</div>
+                <div style="font-size:16px; color:#cbd5e1; margin-top:3px;">Siêu đô thị &gt;14 triệu dân</div>
+              </div>
+            </div>
+
+            <div class="anim-item delay-4" style="display:flex; align-items:center; justify-content:space-between; gap:12px; background:rgba(15, 37, 71, 0.78); border:1px solid rgba(255,255,255,0.18); padding:14px 20px; border-radius:12px;">
+              <div style="font-size:20px; color:#e2e8f0;">
+                <strong style="color:#ffcd00;">Nhóm thực hiện:</strong>
+                <span contenteditable="true" id="edit-cover-group" style="color:#ffffff; font-weight:700; margin-left:6px;">Nhóm 7 – Lớp 12A3</span>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="anim-item delay-2" style="position:relative; height:100%; overflow:hidden; min-width:0;">
+            <img src="https://www.hoteldesartssaigon.com/wp-content/uploads/sites/92/2026/03/Landmark-81-1024x683.jpg"
+                 alt="Toàn cảnh Thành phố Hồ Chí Minh bên sông Sài Gòn và tòa tháp Landmark 81"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                 style="width:100%; height:100%; object-fit:cover; object-position:center;" />
+            <div style="display:none; width:100%; height:100%; background:linear-gradient(135deg,#0f2547,#1e3a8a); align-items:center; justify-content:center; color:#fff; font-weight:700; padding:24px; text-align:center;">
+              Biểu tượng Đô thị Hiện đại TP. Hồ Chí Minh bên sông Sài Gòn
+            </div>
+            <div style="position:absolute; inset:0; background:linear-gradient(90deg, #071120 0%, rgba(7,17,32,0.15) 35%, rgba(7,17,32,0.1) 100%);"></div>
+            <div class="photo-badge" style="bottom:28px; left:24px; right:24px;">
+              <strong>Không gian đô thị hiện đại ven sông Sài Gòn</strong>
+              Đầu tàu kinh tế, trung tâm tài chính – thương mại – khoa học công nghệ lớn nhất Việt Nam.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 2: SLIDE RIÊNG BIỆT GIỚI THIỆU 10 THÀNH VIÊN ĐẶC SẮC, SIÊU ẤN TƯỢNG
+           ====================================================================== -->
+      <section class="slide member-showcase-slide" data-index="1" data-transition="morph" data-title="Giới thiệu 6 Thành viên Nhóm 7 – 12A3" data-part="Thành viên">
+        <canvas id="member-particles" width="1600" height="900" style="position:absolute; inset:0; z-index:1; pointer-events:none;"></canvas>
+        <svg class="dong-son-watermark dark-bg" style="left: 50%; top: 50%; transform: translate(-50%, -50%); color: #ffcd00; opacity: 0.055;"><use href="#dong-son-symbol"></use></svg>
+
+        <header class="slide-header anim-item delay-1" style="border-bottom-color: rgba(255,255,255,0.14); margin-bottom: 20px;">
+          <div class="slide-header-left">
+            <div class="section-kicker" style="color:#ffcd00;">
+              <span class="dot" style="background:#ffcd00;"></span> ĐỘI NGŨ THỰC HIỆN CHUYÊN ĐỀ • NHÓM 7 – LỚP 12A3
+            </div>
+            <h2 class="slide-title" style="color:#ffffff; font-family:var(--font-serif); font-size:36px;">
+              Gặp Gỡ <span style="color:#ffcd00;">6 Thành Viên</span> Nhóm 7
+            </h2>
+            <p class="slide-subtitle" style="color:#cbd5e1; font-size:20px;">
+              Đoàn kết – Sáng tạo – Bản lĩnh • Cùng kiến tạo bài thuyết trình Thành tựu TP.HCM 2021 – 2026
+            </p>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px;">
+          </div>
+        </header>
+
+        <div class="slide-body">
+          <div class="member-grid-6 anim-item delay-2" id="member-grid-6">
+            <!-- 01 -->
+            <div class="member-card" onclick="highlightSingleMember(this)">
+              <span class="member-num-badge">01</span>
+              <div class="member-avatar" style="background:linear-gradient(135deg,#db2777,#9d174d);">AN</div>
+              <div class="member-name">Hồ Thị Ánh Ngọc</div>
+              <div class="member-tag" contenteditable="true">Thành viên Nhóm 7</div>
+            </div>
+            <!-- 02 -->
+            <div class="member-card" onclick="highlightSingleMember(this)">
+              <span class="member-num-badge">02</span>
+              <div class="member-avatar" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);">TH</div>
+              <div class="member-name">Vân Thiên Hương</div>
+              <div class="member-tag" contenteditable="true">Thành viên Nhóm 7</div>
+            </div>
+            <!-- 03 -->
+            <div class="member-card" onclick="highlightSingleMember(this)">
+              <span class="member-num-badge">03</span>
+              <div class="member-avatar" style="background:linear-gradient(135deg,#e11d48,#9f1239);">PV</div>
+              <div class="member-name">Phạm Lê Phương Vy</div>
+              <div class="member-tag" contenteditable="true">Thành viên Nhóm 7</div>
+            </div>
+            <!-- 04 -->
+            <div class="member-card" onclick="highlightSingleMember(this)">
+              <span class="member-num-badge">04</span>
+              <div class="member-avatar" style="background:linear-gradient(135deg,#0891b2,#155e75);">DL</div>
+              <div class="member-name">Trần Vũ Duy Lượng</div>
+              <div class="member-tag" contenteditable="true">Thành viên Nhóm 7</div>
+            </div>
+            <!-- 05 -->
+            <div class="member-card" onclick="highlightSingleMember(this)">
+              <span class="member-num-badge">05</span>
+              <div class="member-avatar" style="background:linear-gradient(135deg,#059669,#065f46);">ĐĐ</div>
+              <div class="member-name">Vương Đình Đăng</div>
+              <div class="member-tag" contenteditable="true">Thành viên Nhóm 7</div>
+            </div>
+            <!-- 06 -->
+            <div class="member-card" onclick="highlightSingleMember(this)">
+              <span class="member-num-badge">06</span>
+              <div class="member-avatar" style="background:linear-gradient(135deg,#ea580c,#9a3412);">QL</div>
+              <div class="member-name">Đàm Phạm Quang Linh</div>
+              <div class="member-tag" contenteditable="true">Thành viên Nhóm 7</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 3: GIỚI THIỆU, BỐI CẢNH & ĐẶT VẤN ĐỀ NGHIÊN CỨU
+           ====================================================================== -->
+      <section class="slide" data-index="2" data-transition="slide" data-title="Bối cảnh & Đặt vấn đề nghiên cứu" data-part="Mở đầu">
+        <svg class="dong-son-watermark" style="right: -100px; bottom: -100px; color: #0f2547;"><use href="#dong-son-symbol"></use></svg>
+
+        <header class="slide-header anim-item delay-1">
+          <div class="slide-header-left">
+            <div class="section-kicker"><span class="dot"></span> MỞ ĐẦU &amp; ĐẶT VẤN ĐỀ NGHIÊN CỨU</div>
+            <h2 class="slide-title">Vì sao giai đoạn 2021 – 2026 là chương lịch sử đặc biệt của TP.HCM?</h2>
+            <p class="slide-subtitle">Năm năm bản lề chuyển mình từ thử thách chưa từng có sang cấu trúc Siêu đô thị tầm vóc khu vực</p>
+          </div>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-12" style="height:100%; min-height:0;">
+            <!-- Cột trái (7 phần) -->
+            <div class="col-7 anim-item delay-2" style="display:flex; flex-direction:column; gap:14px; height:100%; min-height:0;">
+              <div class="card accent-top-red" style="flex:1; justify-content:center; gap:12px;">
+                <h3>1. Bối cảnh Lịch sử &amp; Lý do chọn đề tài</h3>
+                <ul class="clean-list">
+                  <li><strong>Vượt tâm chấn đại dịch (2021):</strong> Làn sóng COVID-19 lần 4 khiến GRDP giảm <strong>-6,78%</strong>, nhưng chỉ sau 1 năm Thành phố bật dậy đạt <strong>+9,03% (2022)</strong>.</li>
+                  <li><strong>Đột phá thể chế &amp; Hạ tầng (2023–2025):</strong> Quốc hội ban hành <strong>Nghị quyết 98/2023/QH15</strong> và <strong>260/2025/QH15</strong>; vận hành <strong>Metro số 1</strong>, <strong>Nhà ga T3</strong>, <strong>Cầu Ba Son</strong>.</li>
+                  <li><strong>Bước ngoặt Siêu đô thị (01/07/2025 – 2026):</strong> Hợp nhất TP.HCM – Bình Dương – Bà Rịa Vũng Tàu thành đô thị <strong>6.772 km²</strong>, <strong>&gt;14 triệu dân</strong>, GRDP 9T/2026 đạt <strong>+9,06%</strong>.</li>
+                </ul>
+              </div>
+
+              <div style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:12px;">
+                <div class="card accent-top-navy" style="padding:12px 16px;">
+                  <div style="font-size:14px; font-weight:800; color:var(--accent-red);">CÚ BẬT 2021 → 2022</div>
+                  <div style="font-size:22px; font-weight:900; color:var(--primary-navy); margin:2px 0;">-6,78% → +9,03%</div>
+                  <div style="font-size:16px; color:var(--text-secondary);">Phục hồi chữ V thần tốc</div>
+                </div>
+                <div class="card accent-top-teal" style="padding:12px 16px;">
+                  <div style="font-size:14px; font-weight:800; color:var(--accent-teal);">THU NGÂN SÁCH 2025</div>
+                  <div style="font-size:22px; font-weight:900; color:var(--primary-navy); margin:2px 0;">&gt;800.000 Tỷ</div>
+                  <div style="font-size:16px; color:var(--text-secondary);">Giữ vững vị trí số 1 cả nước</div>
+                </div>
+                <div class="card accent-top-gold" style="padding:12px 16px;">
+                  <div style="font-size:14px; font-weight:800; color:var(--accent-gold);">QUY MÔ TỪ 01/07/2025</div>
+                  <div style="font-size:22px; font-weight:900; color:var(--primary-navy); margin:2px 0;">&gt;14 Triệu Dân</div>
+                  <div style="font-size:16px; color:var(--text-secondary);">Siêu đô thị 6.772 km²</div>
+                </div>
+              </div>
+
+              <div class="card accent-top-gold" style="background:#fffbeb; padding:14px 20px;">
+                <div style="font-size:14px; font-weight:800; color:var(--accent-gold); text-transform:uppercase; letter-spacing:0.05em;">Câu hỏi trọng tâm nghiên cứu</div>
+                <p style="font-size:20px; font-weight:700; color:var(--primary-navy); line-height:1.4; margin-top:4px;">
+                  “Động lực nào giúp TP.HCM xoay chuyển từ tăng trưởng âm năm 2021 sang vị thế Siêu đô thị thu ngân sách vượt 800.000 tỷ đồng?”
+                </p>
+              </div>
+            </div>
+
+            <!-- Cột phải (5 phần): 2 Hình ảnh minh họa thực tế chia đều chiều cao -->
+            <div class="col-5 anim-item delay-3" style="display:flex; flex-direction:column; gap:14px; height:100%; min-height:0;">
+              <div class="photo-frame" style="flex:1; height:auto; min-height:0;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/3d/Ho_Chi_Minh_City%2C_City_Hall%2C_2020-01_CN-02.jpg"
+                     alt="Trụ sở HĐND và UBND Thành phố Hồ Chí Minh"
+                     onerror="this.style.display='none';" />
+                <div class="photo-badge">
+                  <strong>Trụ sở HĐND &amp; UBND TP.HCM</strong>
+                  Di tích kiến trúc nghệ thuật cấp Quốc gia
+                </div>
+              </div>
+              <div class="photo-frame" style="flex:1; height:auto; min-height:0;">
+                <img src="https://vnguide.vn/uploads/0000/7/2024/09/09/toa-nha-bitexco-01.jpg"
+                     alt="Tòa nhà Bitexco và trung tâm tài chính Quận 1 TP.HCM"
+                     onerror="this.style.display='none';" />
+                <div class="photo-badge">
+                  <strong>Trung tâm Tài chính – Thương mại Quận 1</strong>
+                  Nhịp sống kinh tế năng động hàng đầu cả nước
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ======================================================================
+           SLIDE 4: ĐÁP ÁN CÂU HỎI TRỌNG TÂM NGHIÊN CỨU
+           ====================================================================== -->
+      <section class="slide" data-index="3" data-transition="slide" data-title="Đáp án Câu hỏi Trọng tâm Nghiên cứu" data-part="Mở đầu">
+        <svg class="dong-son-watermark" style="right: -100px; bottom: -100px; color: #0f2547;"><use href="#dong-son-symbol"></use></svg>
+
+        <header class="slide-header anim-item delay-1">
+          <div class="slide-header-left">
+            <div class="section-kicker"><span class="dot"></span> GIẢI ĐÁP TRỌNG TÂM NGHIÊN CỨU • 4 ĐỘNG LỰC CỐT LÕI</div>
+            <h2 class="slide-title">Đáp án Câu hỏi Trọng tâm Nghiên cứu</h2>
+            <p class="slide-subtitle">“Động lực nào giúp TP.HCM xoay chuyển từ tăng trưởng âm năm 2021 sang vị thế Siêu đô thị thu ngân sách vượt 800.000 tỷ đồng?”</p>
+          </div>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-2" style="gap:18px;">
+            <div class="card accent-top-red anim-item delay-1" style="justify-content:space-between;">
+              <div>
+                <span class="status-pill completed" style="background:#fee2e2; color:#991b1b; border-color:#fca5a5;">Động lực 01 • Thể chế</span>
+                <h3 style="margin:10px 0 8px 0;">1. Đột phá Cơ chế Đặc thù</h3>
+                <ul class="clean-list">
+                  <li>Ban hành <strong>Nghị quyết 98/2023/QH15</strong> (44 cơ chế) và <strong>Nghị quyết 260/2025/QH15</strong> tháo gỡ điểm nghẽn pháp lý.</li>
+                  <li>Khơi thông vốn <strong>PPP, đô thị TOD</strong>, phân cấp mạnh cho cơ sở và thu hút nhà đầu tư chiến lược.</li>
+                </ul>
+              </div>
+              <div style="background:#fef2f2; padding:10px 14px; border-radius:8px; font-size:16px; font-weight:700; color:#991b1b;">
+                → Mở khóa nguồn lực xã hội hóa &amp; tự chủ tài chính
+              </div>
+            </div>
+
+            <div class="card accent-top-navy anim-item delay-2" style="justify-content:space-between;">
+              <div>
+                <span class="status-pill planned">Động lực 02 • Hạ tầng</span>
+                <h3 style="margin:10px 0 8px 0;">2. Bứt phá Giao thông &amp; Đô thị</h3>
+                <ul class="clean-list">
+                  <li>Vận hành <strong>Metro số 1</strong> (&gt;40 triệu lượt khách), <strong>Nhà ga T3</strong> (+20 triệu khách/năm) và <strong>Cầu Ba Son</strong>.</li>
+                  <li>Đẩy nhanh <strong>Vành đai 3 (&gt;90 km)</strong>, chỉnh trang kênh rạch, kết nối liên vùng Đông Nam Bộ.</li>
+                </ul>
+              </div>
+              <div style="background:#f0f9ff; padding:10px 14px; border-radius:8px; font-size:16px; font-weight:700; color:#0369a1;">
+                → Giảm chi phí logistics, mở rộng không gian phát triển
+              </div>
+            </div>
+
+            <div class="card accent-top-teal anim-item delay-3" style="justify-content:space-between;">
+              <div>
+                <span class="status-pill completed">Động lực 03 • Khoa học &amp; Số hóa</span>
+                <h3 style="margin:10px 0 8px 0;">3. Kinh tế Số &amp; Đổi mới Sáng tạo</h3>
+                <ul class="clean-list">
+                  <li><strong>Kinh tế số</strong> tăng từ 15,38% (2021) lên <strong>22% – 25% GRDP</strong>, tạo động lực tăng trưởng mới.</li>
+                  <li>Phát triển <strong>Khu Công nghệ cao (SHTP)</strong>, vi mạch bán dẫn, AI và hình mẫu <strong>Công dân số</strong>.</li>
+                </ul>
+              </div>
+              <div style="background:#f0fdf4; padding:10px 14px; border-radius:8px; font-size:16px; font-weight:700; color:#166534;">
+                → Nâng cao năng suất lao động &amp; năng lực cạnh tranh
+              </div>
+            </div>
+
+            <div class="card accent-top-gold anim-item delay-4" style="justify-content:space-between; background:#fffbeb;">
+              <div>
+                <span class="status-pill under-construction">Động lực 04 • Hợp nhất Vùng</span>
+                <h3 style="margin:10px 0 8px 0;">4. Cộng hưởng Siêu đô thị (01/07/2025)</h3>
+                <ul class="clean-list">
+                  <li>Hợp nhất <strong>TP.HCM – Bình Dương – Bà Rịa Vũng Tàu</strong>: quy mô <strong>6.772 km²</strong>, <strong>&gt;14 triệu dân</strong>.</li>
+                  <li>Kết hợp 3 cực: <strong>Tài chính – Công nghiệp – Cảng nước sâu</strong>, đưa GRDP 9T/2026 đạt <strong>+9,06%</strong>.</li>
+                </ul>
+              </div>
+              <div style="background:#fef3c7; padding:10px 14px; border-radius:8px; font-size:16px; font-weight:700; color:#92400e;">
+                → Thu ngân sách 2025 vượt 800.000 tỷ đồng, số 1 cả nước
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 4: MỤC LỤC / CẤU TRÚC NỘI DUNG CHÍNH
+           ====================================================================== -->
+      <section class="slide" data-index="4" data-transition="morph" data-title="Mục lục & Cấu trúc 4 Phần lớn" data-part="Mục lục">
+        <header class="slide-header anim-item delay-1">
+          <div class="slide-header-left">
+            <div class="section-kicker"><span class="dot"></span> CẤU TRÚC TỔNG THỂ BÀI THUYẾT TRÌNH</div>
+            <h2 class="slide-title">Hệ thống 04 Phần Trọng tâm &amp; 08 Chuyên đề Phân tích</h2>
+            <p class="slide-subtitle">Nhấp trực tiếp vào từng thẻ bên dưới để di chuyển nhanh đến phần nội dung tương ứng</p>
+          </div>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-2" style="gap:18px;">
+            <!-- PHẦN I -->
+            <div class="toc-card anim-item delay-1" onclick="goToSlide(5)" style="border-top: 4px solid var(--accent-red);">
+              <div class="toc-number">PHẦN I</div>
+              <div>
+                <span class="status-pill completed" style="background:#fee2e2; color:#991b1b; border-color:#fca5a5;">Slide 06 – 09</span>
+                <h3 style="font-size:22px; font-weight:800; color:var(--primary-navy); margin:8px 0 6px 0;">
+                  PHẦN I – ĐỘT PHÁ KINH TẾ VĨ MÔ &amp; THỂ CHẾ ĐẶC THÙ
+                </h3>
+                <p style="font-size:20px; color:var(--text-secondary); line-height:1.38; margin-bottom:10px;">
+                  Quỹ đạo phục hồi chữ V, kỷ lục thu ngân sách và cơ chế từ Nghị quyết 98 đến Nghị quyết 260.
+                </p>
+              </div>
+              <div style="background:#f8fafc; padding:10px 14px; border-radius:10px; font-size:20px; color:var(--text-main); display:flex; flex-direction:column; gap:4px;">
+                <div><strong>1.1.</strong> Tăng trưởng GRDP 2021–2026 (9T/2026 đạt +9,06%)</div>
+                <div><strong>1.2.</strong> Thu ngân sách vượt mốc 800.000 tỷ đồng</div>
+                <div><strong>1.3.</strong> Nghị quyết 98/2023 &amp; Nghị quyết 260/2025/QH15</div>
+              </div>
+            </div>
+
+            <!-- PHẦN II -->
+            <div class="toc-card anim-item delay-2" onclick="goToSlide(9)" style="border-top: 4px solid var(--primary-blue);">
+              <div class="toc-number">PHẦN II</div>
+              <div>
+                <span class="status-pill planned">Slide 10 – 12</span>
+                <h3 style="font-size:22px; font-weight:800; color:var(--primary-navy); margin:8px 0 6px 0;">
+                  PHẦN II – KỲ TÍCH HẠ TẦNG GIAO THÔNG &amp; ĐÔ THỊ
+                </h3>
+                <p style="font-size:20px; color:var(--text-secondary); line-height:1.38; margin-bottom:10px;">
+                  Vận hành Metro số 1, khánh thành Nhà ga T3 Tân Sơn Nhất, cầu Ba Son và khép kín Vành đai 3.
+                </p>
+              </div>
+              <div style="background:#f8fafc; padding:10px 14px; border-radius:10px; font-size:20px; color:var(--text-main); display:flex; flex-direction:column; gap:4px;">
+                <div><strong>2.1.</strong> Đã hoàn thành: Metro số 1, Nhà ga T3, Cầu Ba Son</div>
+                <div><strong>2.2.</strong> Đang tăng tốc: Vành đai 3, Kênh Tham Lương, Cần Giờ</div>
+              </div>
+            </div>
+
+            <!-- PHẦN III -->
+            <div class="toc-card anim-item delay-3" onclick="goToSlide(12)" style="border-top: 4px solid var(--accent-teal);">
+              <div class="toc-number">PHẦN III</div>
+              <div>
+                <span class="status-pill completed">Slide 13 – 15</span>
+                <h3 style="font-size:22px; font-weight:800; color:var(--primary-navy); margin:8px 0 6px 0;">
+                  PHẦN III – CHUYỂN ĐỔI SỐ, GIÁO DỤC, Y TẾ &amp; AN SINH
+                </h3>
+                <p style="font-size:20px; color:var(--text-secondary); line-height:1.38; margin-bottom:10px;">
+                  Kinh tế số đóng góp &gt;22% GRDP, Thành phố học tập UNESCO, y tế chuyên sâu và giảm nghèo bền vững.
+                </p>
+              </div>
+              <div style="background:#f8fafc; padding:10px 14px; border-radius:10px; font-size:20px; color:var(--text-main); display:flex; flex-direction:column; gap:4px;">
+                <div><strong>3.1.</strong> Kinh tế số, SHTP &amp; Hình mẫu Công dân số TP.HCM</div>
+                <div><strong>3.2.</strong> Giáo dục (99,86% TN), Y tế &amp; Xóa nghèo chuẩn QG</div>
+              </div>
+            </div>
+
+            <!-- PHẦN IV -->
+            <div class="toc-card anim-item delay-4" onclick="goToSlide(15)" style="border-top: 4px solid var(--accent-gold);">
+              <div class="toc-number">PHẦN IV</div>
+              <div>
+                <span class="status-pill under-construction">Slide 16 – 18</span>
+                <h3 style="font-size:22px; font-weight:800; color:var(--primary-navy); margin:8px 0 6px 0;">
+                  PHẦN IV – BƯỚC NGOẶT SIÊU ĐÔ THỊ (2025) &amp; TẦM NHÌN 2030
+                </h3>
+                <p style="font-size:20px; color:var(--text-secondary); line-height:1.38; margin-bottom:10px;">
+                  Hợp nhất TP.HCM – Bình Dương – Bà Rịa Vũng Tàu ngày 01/07/2025 và chiến lược giai đoạn 2026 – 2030.
+                </p>
+              </div>
+              <div style="background:#f8fafc; padding:10px 14px; border-radius:10px; font-size:20px; color:var(--text-main); display:flex; flex-direction:column; gap:4px;">
+                <div><strong>4.1.</strong> Siêu đô thị TP.HCM mới: 6.772 km², &gt;14 triệu dân</div>
+                <div><strong>4.2.</strong> Đánh giá tổng kết &amp; Mục tiêu tăng trưởng 2026–2030</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 5: SECTION DIVIDER – PHẦN I
+           ====================================================================== -->
+      <section class="slide section-divider-slide" data-index="5" data-transition="reveal" data-title="Phần I: Đột phá Kinh tế Vĩ mô & Thể chế" data-part="Phần I">
+        <img class="section-divider-bg"
+             src="https://www.themystdongkhoihotel.com/wp-content/uploads/2025/07/nguyen-hue-walking-street.jpg"
+             alt="Phố đi bộ Nguyễn Huệ và trung tâm Quận 1 Thành phố Hồ Chí Minh"
+             onerror="this.style.display='none';" />
+        <div class="section-divider-overlay"></div>
+        <svg class="dong-son-watermark dark-bg" style="right: -80px; top: -80px; color: #ffcd00; z-index:3;"><use href="#dong-son-symbol"></use></svg>
+
+        <div class="section-divider-content">
+          <div class="part-badge anim-item delay-1">
+            <svg class="vn-flag-svg"><use href="#vn-flag-symbol"></use></svg>
+            PHẦN I • TRỤC KINH TẾ &amp; THỂ CHẾ
+          </div>
+          <h2 class="section-divider-title anim-item delay-2">
+            ĐỘT PHÁ KINH TẾ VĨ MÔ &amp;<br/>
+            <span style="color:#ffcd00;">CƠ CHẾ ĐẶC THÙ VƯỢT TRỘI</span>
+          </h2>
+          <p class="section-divider-desc anim-item delay-3">
+            Khẳng định bản lĩnh cực tăng trưởng số 1 cả nước: Phục hồi thần tốc từ mức giảm sâu năm 2021, liên tiếp lập kỷ lục thu ngân sách nhà nước vượt 500.000 tỷ (2024) và vượt 800.000 tỷ đồng (2025), tạo đà tăng trưởng 2 con số.
+          </p>
+
+          <div class="section-subitems-row anim-item delay-4">
+            <div class="section-subitem-box">
+              <div class="code">MỤC 1.1 • TĂNG TRƯỞNG GRDP</div>
+              <div class="name">Phục hồi chữ V từ -6,78% (2021) lên +9,06% (9T/2026)</div>
+            </div>
+            <div class="section-subitem-box">
+              <div class="code">MỤC 1.2 • THU NGÂN SÁCH</div>
+              <div class="name">Giữ vững ngôi đầu quốc gia, tiến tới mốc 1 triệu tỷ đồng</div>
+            </div>
+            <div class="section-subitem-box">
+              <div class="code">MỤC 1.3 • ĐỘT PHÁ THỂ CHẾ</div>
+              <div class="name">Nghị quyết 98/2023/QH15 &amp; Nghị quyết 260/2025/QH15</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 6: MỤC 1.1 – GRDP 2021–2026
+           ====================================================================== -->
+      <section class="slide" data-index="6" data-transition="slide" data-title="1.1. Phục hồi & Tăng trưởng GRDP (2021–2026)" data-part="Phần I">
+        <header class="slide-header anim-item delay-1">
+          <div class="slide-header-left">
+            <div class="section-kicker"><span class="dot"></span> PHẦN I – MỤC 1.1 • ĐỘNG LỰC TĂNG TRƯỞNG KINH TẾ VĨ MÔ</div>
+            <h2 class="slide-title">1.1. Quỹ đạo Phục hồi &amp; Bứt phá Tăng trưởng GRDP (2021 – 2026)</h2>
+            <p class="slide-subtitle">Từ cú sốc đại dịch năm 2021 đến mức tăng trưởng 9 tháng đầu năm 2026 cao nhất trong hơn một thập kỷ</p>
+          </div>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-12">
+            <!-- Cột trái (7 phần): Biểu đồ -->
+            <div class="col-7 anim-item delay-2">
+              <div class="card accent-top-navy" style="height:100%;">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px;">
+                  <div>
+                    <h3>Biểu đồ Tốc độ Tăng trưởng GRDP của TP.HCM (%)</h3>
+                    <p style="font-size:16px; color:var(--text-muted);">Số liệu chính thức từ Cục Thống kê TP.HCM &amp; HĐND TP.HCM</p>
+                  </div>
+                  <span class="status-pill completed">Đỉnh 10 năm: 9T/2026 +9,06%</span>
+                </div>
+
+                <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:4px 0; min-height:0;">
+                  <svg viewBox="0 0 700 280" style="width:100%; height:100%;">
+                    <line x1="56" y1="25" x2="675" y2="25" stroke="#e2e8f0" stroke-dasharray="4 4"/>
+                    <line x1="56" y1="80" x2="675" y2="80" stroke="#e2e8f0" stroke-dasharray="4 4"/>
+                    <line x1="56" y1="135" x2="675" y2="135" stroke="#e2e8f0" stroke-dasharray="4 4"/>
+                    <line x1="56" y1="190" x2="675" y2="190" stroke="#64748b" stroke-width="2"/>
+                    <line x1="56" y1="250" x2="675" y2="250" stroke="#fecaca" stroke-dasharray="4 4"/>
+
+                    <text x="48" y="29" text-anchor="end" font-size="13" fill="#64748b" font-weight="700">+12%</text>
+                    <text x="48" y="84" text-anchor="end" font-size="13" fill="#64748b" font-weight="700">+8%</text>
+                    <text x="48" y="139" text-anchor="end" font-size="13" fill="#64748b" font-weight="700">+4%</text>
+                    <text x="48" y="194" text-anchor="end" font-size="13" fill="#0f172a" font-weight="800">0%</text>
+                    <text x="48" y="254" text-anchor="end" font-size="13" fill="#dc2626" font-weight="700">-7%</text>
+
+                    <rect x="80" y="190" width="52" height="56" rx="5" fill="#ef4444" opacity="0.88"/>
+                    <text x="106" y="268" text-anchor="middle" font-size="14" font-weight="800" fill="#dc2626">-6,78%</text>
+                    <text x="106" y="178" text-anchor="middle" font-size="14" font-weight="700" fill="#334155">2021</text>
+
+                    <rect x="180" y="66" width="52" height="124" rx="5" fill="#0284c7"/>
+                    <text x="206" y="57" text-anchor="middle" font-size="14" font-weight="800" fill="#0284c7">+9,03%</text>
+                    <text x="206" y="210" text-anchor="middle" font-size="14" font-weight="700" fill="#334155">2022</text>
+
+                    <rect x="280" y="110" width="52" height="80" rx="5" fill="#0ea5e9"/>
+                    <text x="306" y="101" text-anchor="middle" font-size="14" font-weight="800" fill="#0369a1">+5,81%</text>
+                    <text x="306" y="210" text-anchor="middle" font-size="14" font-weight="700" fill="#334155">2023</text>
+
+                    <rect x="380" y="91" width="52" height="99" rx="5" fill="#0d9488"/>
+                    <text x="406" y="82" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">+7,17%</text>
+                    <text x="406" y="210" text-anchor="middle" font-size="14" font-weight="700" fill="#334155">2024</text>
+
+                    <rect x="480" y="79" width="52" height="111" rx="5" fill="#059669"/>
+                    <text x="506" y="70" text-anchor="middle" font-size="14" font-weight="800" fill="#047857">+8,03%</text>
+                    <text x="506" y="210" text-anchor="middle" font-size="14" font-weight="700" fill="#334155">2025</text>
+
+                    <rect x="580" y="65" width="58" height="125" rx="5" fill="#da251d"/>
+                    <rect x="580" y="48" width="58" height="17" rx="3" fill="none" stroke="#d97706" stroke-width="1.8" stroke-dasharray="3 2"/>
+                    <text x="609" y="38" text-anchor="middle" font-size="12" font-weight="800" fill="#b45309">Mục tiêu 10,2%</text>
+                    <text x="609" y="61" text-anchor="middle" font-size="14" font-weight="900" fill="#da251d">+9,06%</text>
+                    <text x="609" y="210" text-anchor="middle" font-size="14" font-weight="800" fill="#da251d">9T/2026</text>
+
+                    <polyline fill="none" stroke="#f59e0b" stroke-width="2.5"
+                              points="106,246 206,66 306,110 406,91 506,79 609,65" />
+                  </svg>
+                </div>
+
+                <div style="background:#f8fafc; padding:10px 14px; border-radius:8px; font-size:20px; color:var(--text-secondary); display:flex; justify-content:space-between; gap:10px;">
+                  <span><strong>GRDP (2024):</strong> &gt;2,715 triệu tỷ đồng</span>
+                  <span><strong>2026:</strong> Dịch vụ đóng góp &gt;50%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cột phải (5 phần) -->
+            <div class="col-5 anim-item delay-3" style="display:flex; flex-direction:column; gap:14px;">
+              <div class="card accent-top-red" style="flex:1; justify-content:center; gap:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:14px; font-weight:800; color:var(--accent-red); text-transform:uppercase;">2021 – 2022</span>
+                  <span class="status-pill completed">Bật lò xo sau dịch</span>
+                </div>
+                <h4>Vượt tâm dịch &amp; Phục hồi thần tốc</h4>
+                <p>Từ mức giảm <strong>-6,78% (2021)</strong> do COVID-19, TP.HCM mở cửa an toàn và bật tăng <strong>+9,03% (2022)</strong>.</p>
+              </div>
+
+              <div class="card accent-top-teal" style="flex:1; justify-content:center; gap:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:14px; font-weight:800; color:var(--accent-teal); text-transform:uppercase;">2023 – 2025</span>
+                  <span class="status-pill planned">Tăng tốc bền vững</span>
+                </div>
+                <h4>Vượt “cơn gió ngược” toàn cầu</h4>
+                <p>GRDP tăng liên tục từ <strong>5,81% (2023)</strong> lên <strong>7,17% (2024)</strong> và đạt <strong>8,03% (2025)</strong>.</p>
+              </div>
+
+              <div class="card accent-top-gold" style="flex:1; justify-content:center; gap:6px; background:#fffbeb;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:14px; font-weight:800; color:var(--accent-gold); text-transform:uppercase;">Năm 2026</span>
+                  <span class="status-pill under-construction">Hướng tới 2 con số</span>
+                </div>
+                <h4>9T/2026 đạt +9,06% – Đỉnh 10 năm</h4>
+                <p>Quý IV phấn đấu tăng trên 13,2% để đưa tăng trưởng cả năm 2026 cán mốc <strong>10,2%</strong>.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 7: MỤC 1.2 – THU NGÂN SÁCH & TÍN DỤNG
+           ====================================================================== -->
+      <section class="slide" data-index="7" data-transition="slide" data-title="1.2. Thu Ngân sách Nhà nước & Thương mại" data-part="Phần I">
+        <header class="slide-header anim-item delay-1">
+          <div class="slide-header-left">
+            <div class="section-kicker"><span class="dot"></span> PHẦN I – MỤC 1.2 • TRỤ CỘT TÀI CHÍNH QUỐC GIA</div>
+            <h2 class="slide-title">1.2. Thu Ngân sách Nhà nước: Từ 381.532 Tỷ Đến Kỷ lục &gt;800.000 Tỷ Đồng</h2>
+            <p class="slide-subtitle">Giữ vững vị trí số 1 cả nước về đóng góp ngân sách, tạo nguồn lực tài chính cho đầu tư phát triển</p>
+          </div>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-12">
+            <!-- Cột trái (7 phần) -->
+            <div class="col-7 anim-item delay-2">
+              <div class="card accent-top-gold" style="height:100%;">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                  <div>
+                    <h3>Tổng Thu Ngân sách trên địa bàn (Tỷ đồng)</h3>
+                    <p style="font-size:16px; color:var(--text-muted);">Nhấp nút bên phải để đổi chế độ xem</p>
+                  </div>
+                  <div class="interactive-tabs">
+                    <button class="tab-btn active" id="btn-budget-actual" onclick="switchBudgetView('actual')">Thực thu (Tỷ)</button>
+                    <button class="tab-btn" id="btn-budget-pct" onclick="switchBudgetView('pct')">% Dự toán</button>
+                  </div>
+                </div>
+
+                <div class="bar-chart-wrap" id="budget-chart-bars">
+                  <div class="bar-col">
+                    <div class="bar-fill" id="bar-2021" style="height: 46%; background: #64748b;">
+                      <span class="bar-val" id="val-2021">381.532</span>
+                    </div>
+                    <span class="bar-year">2021</span>
+                  </div>
+                  <div class="bar-col">
+                    <div class="bar-fill" id="bar-2022" style="height: 57%; background: #0284c7;">
+                      <span class="bar-val" id="val-2022">471.562</span>
+                    </div>
+                    <span class="bar-year">2022</span>
+                  </div>
+                  <div class="bar-col">
+                    <div class="bar-fill" id="bar-2023" style="height: 54%; background: #0ea5e9;">
+                      <span class="bar-val" id="val-2023">~446.500</span>
+                    </div>
+                    <span class="bar-year">2023</span>
+                  </div>
+                  <div class="bar-col">
+                    <div class="bar-fill" id="bar-2024" style="height: 62%; background: #0d9488;">
+                      <span class="bar-val" id="val-2024">508.553</span>
+                    </div>
+                    <span class="bar-year">2024</span>
+                  </div>
+                  <div class="bar-col">
+                    <div class="bar-fill" id="bar-2025" style="height: 92%; background: #059669;">
+                      <span class="bar-val" id="val-2025">&gt;800.000</span>
+                    </div>
+                    <span class="bar-year">2025</span>
+                  </div>
+                  <div class="bar-col">
+                    <div class="bar-fill" id="bar-2026" style="height: 88%; background: #da251d;">
+                      <span class="bar-val" id="val-2026">767.000 (10T)</span>
+                    </div>
+                    <span class="bar-year" style="color:#da251d; font-weight:800;">10T/2026</span>
+                  </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:12px; margin-top:10px;">
+                  <div style="background:#f1f5f9; padding:10px 12px; border-radius:8px;">
+                    <div style="font-size:14px; color:var(--text-muted); font-weight:700;">CỘT MỐC 2024</div>
+                    <div style="font-size:20px; font-weight:800; color:var(--primary-navy); margin-top:2px;">Vượt 500.000 tỷ</div>
+                  </div>
+                  <div style="background:#ecfdf5; padding:10px 12px; border-radius:8px;">
+                    <div style="font-size:14px; color:#047857; font-weight:700;">KỶ LỤC 2025</div>
+                    <div style="font-size:20px; font-weight:800; color:#065f46; margin-top:2px;">&gt;800.000 tỷ đồng</div>
+                  </div>
+                  <div style="background:#fef2f2; padding:10px 12px; border-radius:8px;">
+                    <div style="font-size:14px; color:var(--accent-red); font-weight:700;">10 THÁNG 2026</div>
+                    <div style="font-size:20px; font-weight:800; color:#991b1b; margin-top:2px;">&gt;767.000 tỷ đồng</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cột phải (5 phần) -->
+            <div class="col-5 anim-item delay-3" style="display:flex; flex-direction:column; gap:14px;">
+              <div class="photo-frame" style="height:210px;">
+                <img src="https://cdn.saigonnewport.com.vn/uploads/images/2021/08/16/post-1-6119c80849b74.jpg"
+                     alt="Hoạt động xuất nhập khẩu sôi động tại Tân Cảng Cát Lái TP.HCM"
+                     onerror="this.style.display='none';" />
+                <div class="photo-badge">
+                  <strong>Tân Cảng Cát Lái &amp; Hệ sinh thái Cảng biển</strong>
+                  Động lực thương mại quốc tế và thu ngân sách xuất nhập khẩu
+                </div>
+              </div>
+
+              <div class="card accent-top-navy" style="flex:1; justify-content:center; gap:14px; padding:22px 24px;">
+                <h4 style="font-size:25px;">Điểm sáng Tín dụng &amp; Tiêu dùng</h4>
+                <ul class="clean-list" style="gap:14px;">
+                  <li style="font-size:23px; line-height:1.48;"><strong>Dư nợ tín dụng vượt 5,8 triệu tỷ đồng</strong> sau 10 tháng năm 2026, dẫn đầu cả nước.</li>
+                  <li style="font-size:23px; line-height:1.48;"><strong>Thu nội địa tăng mạnh:</strong> Khu vực ngoài nhà nước tăng <strong>+46,6 ngàn tỷ</strong>, khối FDI tăng <strong>+18,3 ngàn tỷ</strong>.</li>
+                  <li style="font-size:23px; line-height:1.48;"><strong>Tổng mức bán lẻ 10T/2026</strong> tăng <strong>13,5%</strong> so với cùng kỳ.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 8: MỤC 1.3 – NGHỊ QUYẾT 98 & 260 (KÈM ẢNH TÒA NHÀ QUỐC HỘI)
+           ====================================================================== -->
+      <section class="slide" data-index="8" data-transition="morph" data-title="1.3. Cơ chế đặc thù: Nghị quyết 98 & 260" data-part="Phần I">
+        <header class="slide-header anim-item delay-1">
+          <div class="slide-header-left">
+            <div class="section-kicker"><span class="dot"></span> PHẦN I – MỤC 1.3 • BỆ PHÓNG THỂ CHẾ &amp; CHÍNH SÁCH ĐẶC THÙ</div>
+            <h2 class="slide-title">1.3. Từ Nghị quyết 98/2023/QH15 đến Nghị quyết 260/2025/QH15</h2>
+            <p class="slide-subtitle">Tháo gỡ điểm nghẽn pháp lý, phân cấp phân quyền mạnh mẽ và khơi thông nguồn lực xã hội hóa</p>
+          </div>
+        </header>
+
+        <div class="slide-body" style="justify-content:space-between; gap:16px;">
+          <!-- Hàng trên: Ảnh Tòa nhà Quốc hội + 3 bước tiến trình -->
+          <div class="grid-12 anim-item delay-2" style="height:auto; flex:1.05; min-height:0;">
+            <div class="col-4" style="height:100%; min-height:0;">
+              <div class="photo-frame" style="height:100%; min-height:0;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/Vietnam_National_Assembly_Building.jpg?utm_source=vi.wikipedia.org&utm_campaign=index&utm_content=original"
+                     alt="Tòa nhà Quốc hội Việt Nam – Nơi ban hành Nghị quyết 98 và Nghị quyết 260 cho TP.HCM"
+                     onerror="this.style.display='none';" />
+                <div class="photo-badge">
+                  <strong>Quốc hội Việt Nam</strong>
+                  Trao cơ chế đặc thù vượt trội cho TP.HCM
+                </div>
+              </div>
+            </div>
+
+            <div class="col-8" style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:14px; height:100%; min-height:0;">
+              <div class="card accent-top-navy" style="background:#f8fafc; padding:20px 20px; justify-content:center; gap:12px;">
+                <span class="status-pill completed" style="font-size:15px; padding:5px 12px;">24/06/2023</span>
+                <h4 style="font-size:25px;">Nghị quyết 98/2023</h4>
+                <p style="font-size:22.5px; line-height:1.48;">Trao <strong>44 cơ chế đặc thù</strong> trên 7 lĩnh vực trọng yếu (hiệu lực 01/08/2023).</p>
+              </div>
+              <div class="card accent-top-red" style="background:#fffbeb; padding:20px 20px; justify-content:center; gap:12px;">
+                <span class="status-pill under-construction" style="font-size:15px; padding:5px 12px;">2023 – 2025</span>
+                <h4 style="font-size:25px;">Mô hình tiên phong</h4>
+                <p style="font-size:22.5px; line-height:1.48;">Lập <strong>Sở An toàn thực phẩm</strong>, Trung tâm Chuyển đổi số, quy hoạch <strong>TOD</strong>.</p>
+              </div>
+              <div class="card accent-top-teal" style="background:#f0fdf4; padding:20px 20px; justify-content:center; gap:12px;">
+                <span class="status-pill completed" style="font-size:15px; padding:5px 12px;">12/2025</span>
+                <h4 style="font-size:25px;">Nghị quyết 260/2025</h4>
+                <p style="font-size:22.5px; line-height:1.48;">Sửa đổi NQ 98, mở rộng thẩm quyền xứng tầm <strong>Siêu đô thị</strong>.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hàng dưới: 4 trụ cột cơ chế -->
+          <div class="anim-item delay-3" style="display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:16px; flex:0.95; min-height:0;">
+            <div class="card" style="padding:20px 20px;">
+              <div>
+                <h4 style="color:var(--accent-red); margin-bottom:10px; font-size:24px;">01. Đô thị TOD &amp; PPP</h4>
+                <p style="font-size:22px; line-height:1.48;">Khai thác quỹ đất quanh ga Metro, Vành đai 3; mở rộng hợp tác công – tư (BOT, BT).</p>
+              </div>
+              <div style="font-size:18px; font-weight:700; color:var(--accent-red);">→ Khơi thông vốn hạ tầng</div>
+            </div>
+            <div class="card" style="padding:20px 20px;">
+              <div>
+                <h4 style="color:var(--primary-blue); margin-bottom:10px; font-size:24px;">02. Nhà đầu tư Chiến lược</h4>
+                <p style="font-size:22px; line-height:1.48;">Ưu đãi cho bán dẫn, R&amp;D, năng lượng sạch và Cảng trung chuyển quốc tế Cần Giờ.</p>
+              </div>
+              <div style="font-size:18px; font-weight:700; color:var(--primary-blue);">→ Hút FDI công nghệ cao</div>
+            </div>
+            <div class="card" style="padding:20px 20px;">
+              <div>
+                <h4 style="color:var(--accent-gold); margin-bottom:10px; font-size:24px;">03. Tài chính &amp; Carbon</h4>
+                <p style="font-size:22px; line-height:1.48;">Phát hành trái phiếu địa phương, vay lại ODA và thí điểm trao đổi <strong>tín chỉ carbon</strong>.</p>
+              </div>
+              <div style="font-size:18px; font-weight:700; color:var(--accent-gold);">→ Tự chủ nguồn lực xanh</div>
+            </div>
+            <div class="card" style="padding:20px 20px;">
+              <div>
+                <h4 style="color:var(--accent-teal); margin-bottom:10px; font-size:24px;">04. Phân cấp Bộ máy</h4>
+                <p style="font-size:22px; line-height:1.48;">Tăng quyền tự chủ cho UBND TP và <strong>168 phường, xã</strong>, rút ngắn thủ tục dự án.</p>
+              </div>
+              <div style="font-size:18px; font-weight:700; color:var(--accent-teal);">→ Tinh gọn, hiệu lực</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 9: SECTION DIVIDER – PHẦN II
+           ====================================================================== -->
+      <section class="slide section-divider-slide" data-index="9" data-transition="reveal" data-title="Phần II: Kỳ tích Hạ tầng & Đô thị" data-part="Phần II">
+        <img class="section-divider-bg"
+             src="https://upload.wikimedia.org/wikipedia/commons/a/a9/C%E1%BA%A7u_Ba_Son%2C_TP.HCM%2C_042022.jpg"
+             alt="Cầu dây văng Ba Son nối trung tâm Quận 1 và Khu đô thị mới Thủ Thiêm"
+             onerror="this.style.display='none';" />
+        <div class="section-divider-overlay"></div>
+        <svg class="dong-son-watermark dark-bg" style="left: -80px; bottom: -80px; color: #38bdf8; z-index:3;"><use href="#dong-son-symbol"></use></svg>
+
+        <div class="section-divider-content">
+          <div class="part-badge anim-item delay-1" style="background:linear-gradient(135deg,#0284c7,#0369a1); box-shadow:0 6px 20px rgba(2,132,199,0.4);">
+            <svg class="vn-flag-svg"><use href="#vn-flag-symbol"></use></svg>
+            PHẦN II • ĐỘT PHÁ HẠ TẦNG &amp; KHÔNG GIAN ĐÔ THỊ
+          </div>
+          <h2 class="section-divider-title anim-item delay-2">
+            KỲ TÍCH HẠ TẦNG GIAO THÔNG &amp;<br/>
+            <span style="color:#ffcd00;">CHỈNH TRANG DIỆN MẠO ĐÔ THỊ</span>
+          </h2>
+          <p class="section-divider-desc anim-item delay-3">
+            Đánh dấu sự về đích của hàng loạt đại công trình biểu tượng: Tuyến Metro số 1 đón hơn 40 triệu lượt khách, Nhà ga T3 Tân Sơn Nhất vượt tiến độ 2 tháng và đường Vành đai 3 tăng tốc khép kín liên kết vùng.
+          </p>
+
+          <div class="section-subitems-row anim-item delay-4" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+            <div class="section-subitem-box">
+              <div class="code">MỤC 2.1 • ĐÃ HOÀN THÀNH &amp; ĐƯA VÀO VẬN HÀNH</div>
+              <div class="name">Tuyến Metro số 1 (Bến Thành – Suối Tiên), Nhà ga T3 Tân Sơn Nhất &amp; Cầu Ba Son</div>
+            </div>
+            <div class="section-subitem-box">
+              <div class="code">MỤC 2.2 • ĐANG THI CÔNG TĂNG TỐC &amp; QUY HOẠCH MỚI</div>
+              <div class="name">Vành đai 3 TP.HCM, Kênh Tham Lương – Bến Cát, Rạch Xuyên Tâm &amp; Cao tốc Mộc Bài</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 10: MỤC 2.1 – METRO SỐ 1, NHÀ GA T3, CẦU BA SON
+           ====================================================================== -->
+      <section class="slide" data-index="10" data-transition="slide" data-title="2.1. Công trình Hoàn thành: Metro số 1 & Nhà ga T3" data-part="Phần II">
+        <header class="slide-header anim-item delay-1">
+          <div class="slide-header-left">
+            <div class="section-kicker"><span class="dot"></span> PHẦN II – MỤC 2.1 • CÁC CÔNG TRÌNH TRỌNG ĐIỂM ĐÃ HOÀN THÀNH</div>
+            <h2 class="slide-title">2.1. Dấu ấn Metro số 1, Nhà ga T3 Tân Sơn Nhất &amp; Cầu Ba Son</h2>
+            <p class="slide-subtitle">Khai mở giao thông công cộng sức chở lớn và giải tỏa cửa ngõ hàng không quốc gia</p>
+          </div>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-12">
+            <!-- Khối 1: Metro số 1 -->
+            <div class="col-6 anim-item delay-2">
+              <div class="card" style="height:100%; border-top:4px solid var(--primary-blue); padding:16px 20px;">
+                <div class="photo-frame" style="height:215px; margin-bottom:10px;">
+                  <img src="https://cdnv2.tgdd.vn/mwg-static/common/News/1259810/cach-tra-cuu-lo-trinh-tuyen-metro-so-1-aH2.jpg"
+                       alt="Đoàn tàu Metro số 1 Bến Thành – Suối Tiên vận hành trên cao tại TP.HCM"
+                       onerror="this.style.display='none';" />
+                  <div class="photo-badge">
+                    <strong>Tuyến Metro số 1 (Bến Thành – Suối Tiên)</strong>
+                    Dài 19,7 km với 14 nhà ga (3 ga ngầm, 11 ga trên cao)
+                  </div>
+                </div>
+
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                  <span class="status-pill completed" style="font-size:15px; padding:5px 13px;">✓ VẬN HÀNH (22/12/2024)</span>
+                  <span style="font-size:18px; font-weight:800; color:var(--primary-blue);">Khánh thành: 09/03/2025</span>
+                </div>
+
+                <ul class="clean-list" style="margin-bottom:12px; gap:14px;">
+                  <li style="font-size:23px; line-height:1.48;"><strong>Năm đầu vận hành:</strong> Phục vụ <strong>18,95 triệu lượt khách</strong> (~52.000 lượt/ngày).</li>
+                  <li style="font-size:23px; line-height:1.48;"><strong>Đến tháng 10/2026:</strong> Thực hiện hơn <strong>147.915 lượt tàu</strong> an toàn, đón hơn <strong>40 triệu lượt khách</strong>.</li>
+                </ul>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; background:#f0f9ff; padding:10px 14px; border-radius:8px;">
+                  <div>
+                    <div style="font-size:24px; font-weight:900; color:var(--primary-blue);">&gt;40 Triệu</div>
+                    <div style="font-size:15px; color:var(--text-secondary);">Lượt khách đến 10/2026</div>
+                  </div>
+                  <div>
+                    <div style="font-size:24px; font-weight:900; color:var(--primary-navy);">147.915+</div>
+                    <div style="font-size:15px; color:var(--text-secondary);">Chuyến tàu an toàn</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Khối 2: Nhà ga T3 & Cầu Ba Son -->
+            <div class="col-6 anim-item delay-3" style="display:flex; flex-direction:column; gap:16px;">
+              <div class="card accent-top-red" style="flex:1; padding:16px 20px;">
+                <div style="display:grid; grid-template-columns: 1fr 1.25fr; gap:18px; height:100%; align-items:center;">
+                  <div class="photo-frame" style="height:100%; min-height:260px;">
+                    <img src="https://image.vietnamnews.vn/uploadvnnews/Article/2025/4/17/417488_CH1.jpg"
+                         alt="Bên trong Nhà ga hành khách quốc nội T3 Cảng hàng không quốc tế Tân Sơn Nhất"
+                         onerror="this.style.display='none';" />
+                    <div class="photo-badge">
+                      <strong>Nhà ga T3 Tân Sơn Nhất</strong>
+                      Vượt tiến độ 2 tháng (30/4/2025)
+                    </div>
+                  </div>
+
+                  <div>
+                    <span class="status-pill completed" style="margin-bottom:10px; font-size:15px; padding:5px 13px;">✓ KHAI THÁC (30/04/2025)</span>
+                    <h3 style="margin-bottom:12px; font-size:26px;">Nhà ga T3 – Tân Sơn Nhất</h3>
+                    <ul class="clean-list" style="gap:12px;">
+                      <li style="font-size:23px; line-height:1.48;"><strong>Vốn gần 11.000 tỷ đồng:</strong> Hoàn thành sau 20 tháng thi công.</li>
+                      <li style="font-size:23px; line-height:1.48;"><strong>20 triệu khách/năm:</strong> Nâng tổng công suất sân bay lên <strong>50 triệu khách/năm</strong>.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card accent-top-gold" style="padding:16px 20px; background:#fffbeb;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                  <h4>Cầu Ba Son &amp; Hạ tầng Kết nối</h4>
+                  <span class="status-pill completed">✓ 2022 – 2025</span>
+                </div>
+                <p>Khánh thành <strong>Cầu Ba Son</strong> (4/2022) nối Quận 1 – Thủ Thiêm; khai thác hầm chui Nguyễn Văn Linh – Nguyễn Hữu Thọ và đường nối Trần Quốc Hoàn – Cộng Hòa.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 11: MỤC 2.2 – DỰ ÁN ĐANG THI CÔNG & QUY HOẠCH MỚI (THÊM ẢNH VÀNH ĐAI 3 & KÊNH XANH)
+           ====================================================================== -->
+      <section class="slide" data-index="11" data-transition="slide" data-title="2.2. Dự án Đang Thi công (Vành đai 3) & Quy hoạch" data-part="Phần II">
+        <header class="slide-header anim-item delay-1">
+          <div class="slide-header-left">
+            <div class="section-kicker"><span class="dot"></span> PHẦN II – MỤC 2.2 • PHÂN ĐỊNH RÕ TRẠNG THÁI CÁC ĐẠI DỰ ÁN</div>
+            <h2 class="slide-title">2.2. Vành đai 3 TP.HCM, Cải tạo Kênh rạch &amp; Dự án Chiến lược</h2>
+            <p class="slide-subtitle">Phân biệt minh bạch dự án đang thi công về đích năm 2026 và dự án quy hoạch mới</p>
+          </div>
+          <div class="interactive-tabs">
+            <button class="tab-btn active" onclick="filterProjects('all', this)">Tất cả (06)</button>
+            <button class="tab-btn" onclick="filterProjects('constructing', this)">Đang thi công 2026</button>
+            <button class="tab-btn" onclick="filterProjects('planning', this)">Quy hoạch mới</button>
+          </div>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-12">
+            <!-- Cột trái (8 phần) -->
+            <div class="col-8 anim-item delay-2">
+              <div style="display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:14px; height:100%;" id="project-cards-grid">
+                <div class="card project-item" data-status="constructing" style="padding:14px 18px; border-left:4px solid var(--accent-gold);">
+                  <div>
+                    <span class="status-pill under-construction">⚙ ĐANG THI CÔNG • VỀ ĐÍCH 2026</span>
+                    <h4 style="margin:5px 0;">1. Đường Vành đai 3 (&gt;90 km)</h4>
+                    <p>Thi công xuyên Tết 2026, thông xe kỹ thuật từng đoạn và hoàn thành cuối năm 2026.</p>
+                  </div>
+                  <div style="font-size:15px; font-weight:700; color:var(--accent-gold);">Tiến độ: Đạt &gt;62% – 75%</div>
+                </div>
+
+                <div class="card project-item" data-status="constructing" style="padding:14px 18px; border-left:4px solid var(--accent-gold);">
+                  <div>
+                    <span class="status-pill under-construction">⚙ ĐANG THI CÔNG • CUỐI 2026</span>
+                    <h4 style="margin:5px 0;">2. Kênh Tham Lương – Bến Cát</h4>
+                    <p>Vốn <strong>9.030 tỷ đồng</strong>, dài &gt;32 km. Đến 3/2026 đạt trên <strong>65% tiến độ</strong>.</p>
+                  </div>
+                  <div style="font-size:15px; font-weight:700; color:var(--accent-gold);">Mục tiêu: Thông xe cuối 2026</div>
+                </div>
+
+                <div class="card project-item" data-status="constructing" style="padding:14px 18px; border-left:4px solid var(--accent-gold);">
+                  <div>
+                    <span class="status-pill under-construction">⚙ ĐANG GPMB &amp; THI CÔNG</span>
+                    <h4 style="margin:5px 0;">3. Rạch Xuyên Tâm &amp; Kênh Đôi</h4>
+                    <p>Chỉnh trang đô thị, hướng tới di dời hơn <strong>11.800 căn nhà</strong> ven kênh rạch.</p>
+                  </div>
+                  <div style="font-size:15px; font-weight:700; color:var(--accent-gold);">Nâng cao chất lượng sống</div>
+                </div>
+
+                <div class="card project-item" data-status="constructing" style="padding:14px 18px; border-left:4px solid var(--accent-gold);">
+                  <div>
+                    <span class="status-pill under-construction">⚙ ĐANG THI CÔNG ĐỒNG BỘ</span>
+                    <h4 style="margin:5px 0;">4. Nút giao An Phú &amp; Bến Lức – LT</h4>
+                    <p>Nút giao 3 tầng cửa ngõ phía Đông nối cao tốc và sân bay Long Thành.</p>
+                  </div>
+                  <div style="font-size:15px; font-weight:700; color:var(--accent-gold);">Giải tỏa ùn tắc cửa ngõ Đông</div>
+                </div>
+
+                <div class="card project-item" data-status="planning" style="padding:14px 18px; border-left:4px solid var(--primary-blue);">
+                  <div>
+                    <span class="status-pill planned">📐 CHUẨN BỊ / KHỞI CÔNG</span>
+                    <h4 style="margin:5px 0;">5. Cao tốc Mộc Bài &amp; Metro 2</h4>
+                    <p>Metro số 2 hoàn tất di dời hạ tầng; Cao tốc Mộc Bài nối hành lang xuyên Á.</p>
+                  </div>
+                  <div style="font-size:15px; font-weight:700; color:var(--primary-blue);">Mạng lưới Metro 2030</div>
+                </div>
+
+                <div class="card project-item" data-status="planning" style="padding:14px 18px; border-left:4px solid var(--primary-blue);">
+                  <div>
+                    <span class="status-pill planned">📐 QUY HOẠCH 2030 – 2050</span>
+                    <h4 style="margin:5px 0;">6. Siêu Cảng Cần Giờ</h4>
+                    <p>Kết hợp cụm cảng Cái Mép – Thị Vải tạo trung tâm hàng hải tầm cỡ châu Á.</p>
+                  </div>
+                  <div style="font-size:15px; font-weight:700; color:var(--primary-blue);">Cực kinh tế biển Biển Đông</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cột phải (4 phần): 2 ảnh minh họa Vành đai 3 & Thủ Thiêm -->
+            <div class="col-4 anim-item delay-3" style="display:flex; flex-direction:column; gap:14px;">
+              <div class="photo-frame" style="flex:1;">
+                <img src="https://tphcm.cdnchinhphu.vn/334895287454388224/2023/6/8/z441556704679081dba006f0f73cbb571a20517af53e25-16862263660411398698135.jpg"
+                     alt="Phối cảnh tuyến đường Vành đai 3 TP.HCM kết nối liên vùng"
+                     onerror="this.style.display='none';" />
+                <div class="photo-badge">
+                  <strong>Đường Vành đai 3 TP.HCM</strong>
+                  Trục kết nối liên vùng Đông Nam Bộ
+                </div>
+              </div>
+              <div class="photo-frame" style="flex:1;">
+                <img src="https://cdn2.tuoitre.vn/471584752817336320/2026/1/5/thu-thiemtto-1767580762365400358224-17676041723811131832301.jpg"
+                     alt="Toàn cảnh Khu đô thị mới Thủ Thiêm nhìn từ trên cao bên sông Sài Gòn"
+                     onerror="this.style.display='none';" />
+                <div class="photo-badge">
+                  <strong>Bán đảo Thủ Thiêm</strong>
+                  Tâm điểm Trung tâm Tài chính Quốc tế
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 12: SECTION DIVIDER – PHẦN III
+           ====================================================================== -->
+      <section class="slide section-divider-slide" data-index="12" data-transition="reveal" data-title="Phần III: Chuyển đổi số, Giáo dục, Y tế & An sinh" data-part="Phần III">
+        <img class="section-divider-bg"
+             src="https://upload.wikimedia.org/wikipedia/commons/0/03/Saigon_Central_Post_Office_%2852681461470%29.jpg"
+             alt="Bưu điện Trung tâm Sài Gòn – Biểu tượng giao thoa lịch sử và kết nối hiện đại"
+             onerror="this.style.display='none';" />
+        <div class="section-divider-overlay"></div>
+        <svg class="dong-son-watermark dark-bg" style="right: -80px; bottom: -80px; color: #10b981; z-index:3;"><use href="#dong-son-symbol"></use></svg>
+
+        <div class="section-divider-content">
+          <div class="part-badge anim-item delay-1" style="background:linear-gradient(135deg,#0d9488,#059669); box-shadow:0 6px 20px rgba(13,148,136,0.4);">
+            <svg class="vn-flag-svg"><use href="#vn-flag-symbol"></use></svg>
+            PHẦN III • KHOA HỌC CÔNG NGHỆ &amp; PHÁT TRIỂN CON NGƯỜI
+          </div>
+          <h2 class="section-divider-title anim-item delay-2">
+            CHUYỂN ĐỔI SỐ TOÀN DIỆN,<br/>
+            <span style="color:#ffcd00;">GIÁO DỤC, Y TẾ &amp; AN SINH XÃ HỘI</span>
+          </h2>
+          <p class="section-divider-desc anim-item delay-3">
+            Lấy người dân làm trung tâm: Xây dựng hình mẫu Công dân số, giữ vững chất lượng giáo dục mũi nhọn, phát triển y tế chuyên sâu và hoàn thành chương trình giảm nghèo bền vững trước hạn 2 năm.
+          </p>
+
+          <div class="section-subitems-row anim-item delay-4" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+            <div class="section-subitem-box">
+              <div class="code">MỤC 3.1 • KINH TẾ SỐ &amp; ĐỔI MỚI SÁNG TẠO</div>
+              <div class="name">Tỷ trọng Kinh tế số vượt 22% GRDP, Khu Công nghệ cao &amp; Ứng dụng Công dân số</div>
+            </div>
+            <div class="section-subitem-box">
+              <div class="code">MỤC 3.2 • GIÁO DỤC, Y TẾ &amp; AN SINH XÃ HỘI</div>
+              <div class="name">99,86% tốt nghiệp THPT, 400.000+ Hồ sơ sức khỏe điện tử &amp; Xóa hộ nghèo chuẩn QG</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 13: MỤC 3.1 – KINH TẾ SỐ & CÔNG DÂN SỐ
+           ====================================================================== -->
+      <section class="slide" data-index="13" data-transition="slide" data-title="3.1. Kinh tế số, Công nghệ cao & Công dân số" data-part="Phần III">
+        <header class="slide-header anim-item delay-1">
+          <div class="slide-header-left">
+            <div class="section-kicker"><span class="dot"></span> PHẦN III – MỤC 3.1 • CHUYỂN ĐỔI SỐ &amp; KHOA HỌC CÔNG NGHỆ</div>
+            <h2 class="slide-title">3.1. Bứt phá Kinh tế Số &amp; Hình mẫu “Công dân Số TP.HCM”</h2>
+            <p class="slide-subtitle">Đưa công nghệ số và trí tuệ nhân tạo (AI) trở thành động lực tăng trưởng mới giai đoạn 2021 – 2026</p>
+          </div>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-12">
+            <!-- Cột trái (6 phần) -->
+            <div class="col-6 anim-item delay-2">
+              <div class="card accent-top-teal" style="height:100%;">
+                <div>
+                  <span class="status-pill completed">Động lực tăng trưởng mới</span>
+                  <h3 style="margin:8px 0 4px 0;">Tỷ trọng Kinh tế Số trong GRDP (%)</h3>
+                  <p style="font-size:16px; color:var(--text-muted); margin-bottom:16px;">Nguồn: Chinhphu.vn &amp; Báo Nhân Dân</p>
+
+                  <div style="display:flex; flex-direction:column; gap:16px;">
+                    <div>
+                      <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:700; margin-bottom:5px;">
+                        <span>Năm 2021</span>
+                        <span style="color:var(--text-secondary);">15,38% GRDP</span>
+                      </div>
+                      <div style="height:12px; background:#e2e8f0; border-radius:999px; overflow:hidden;">
+                        <div style="width:61.5%; height:100%; background:#64748b; border-radius:999px;"></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:700; margin-bottom:5px;">
+                        <span>Năm 2022</span>
+                        <span style="color:var(--primary-blue);">18,66% GRDP</span>
+                      </div>
+                      <div style="height:12px; background:#e2e8f0; border-radius:999px; overflow:hidden;">
+                        <div style="width:74.6%; height:100%; background:#0284c7; border-radius:999px;"></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:700; margin-bottom:5px;">
+                        <span>Năm 2023</span>
+                        <span style="color:var(--accent-teal);">21,50% GRDP</span>
+                      </div>
+                      <div style="height:12px; background:#e2e8f0; border-radius:999px; overflow:hidden;">
+                        <div style="width:86%; height:100%; background:#0d9488; border-radius:999px;"></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:700; margin-bottom:5px;">
+                        <span>Năm 2024 – 2025</span>
+                        <span style="color:var(--accent-emerald);">~22,0% – 25,0% GRDP</span>
+                      </div>
+                      <div style="height:12px; background:#e2e8f0; border-radius:999px; overflow:hidden;">
+                        <div style="width:94%; height:100%; background:linear-gradient(90deg,#059669,#10b981); border-radius:999px;"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:12px 16px; border-radius:10px; font-size:20px; color:#166534;">
+                  <strong>Định hướng 2026 – 2030:</strong> Thuộc nhóm 2 địa phương dẫn đầu cả nước về chuyển đổi số.
+                </div>
+              </div>
+            </div>
+
+            <!-- Cột phải (6 phần) -->
+            <div class="col-6 anim-item delay-3" style="display:flex; flex-direction:column; gap:14px;">
+              <div class="photo-frame" style="height:215px;">
+                <img src="https://tttfic.com/wp-content/uploads/2024/03/Sam-Sung-in-High-Tech-Park-Ho-Chi-Minh-City-TTTFIC-Group.jpg?v=1710687859"
+                     alt="Tổ hợp nghiên cứu và sản xuất công nghệ cao tại Khu Công nghệ cao TP.HCM (SHTP)"
+                     onerror="this.style.display='none';" />
+                <div class="photo-badge">
+                  <strong>Khu Công nghệ cao TP.HCM (SHTP)</strong>
+                  Tâm điểm thu hút FDI công nghệ cao, vi mạch bán dẫn và R&amp;D
+                </div>
+              </div>
+
+              <div class="card accent-top-navy" style="flex:1; justify-content:center; gap:14px; padding:22px 24px;">
+                <h4 style="font-size:25px;">Ba trụ cột Chuyển đổi số phục vụ Nhân dân</h4>
+                <ul class="clean-list" style="gap:14px;">
+                  <li style="font-size:23px; line-height:1.48;"><strong>Siêu ứng dụng “Công dân số TP.HCM”:</strong> Kết nối VNeID, phản ánh 1022, dịch vụ công, y tế, giáo dục.</li>
+                  <li style="font-size:23px; line-height:1.48;"><strong>“Bình dân học vụ số”:</strong> Phổ cập kỹ năng số đến từng khu phố; 10/2026 ra mắt <strong>3 mô hình số mới</strong>.</li>
+                  <li style="font-size:23px; line-height:1.48;"><strong>Trung tâm Khởi nghiệp (SIHUB):</strong> Hệ sinh thái đổi mới sáng tạo hàng đầu Đông Nam Á.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 14: MỤC 3.2 – GIÁO DỤC, Y TẾ & AN SINH (THÊM ẢNH KÊNH XANH ĐÔ THỊ)
+           ====================================================================== -->
+      <section class="slide" data-index="14" data-transition="slide" data-title="3.2. Giáo dục, Y tế & Giảm nghèo bền vững" data-part="Phần III">
+        <header class="slide-header anim-item delay-1">
+          <div class="slide-header-left">
+            <div class="section-kicker"><span class="dot"></span> PHẦN III – MỤC 3.2 • CHẤT LƯỢNG SỐNG &amp; AN SINH XÃ HỘI</div>
+            <h2 class="slide-title">3.2. Giáo dục Tiên phong, Y tế Chuyên sâu &amp; Giảm nghèo Bền vững</h2>
+            <p class="slide-subtitle">Xây dựng đô thị đáng sống với hệ thống phúc lợi xã hội bao trùm, nhân văn và hiện đại</p>
+          </div>
+        </header>
+
+        <div class="slide-body">
+          <div style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:18px; height:100%;">
+            <!-- Cột 1: Giáo dục -->
+            <div class="card accent-top-navy anim-item delay-1" style="padding:18px 20px;">
+              <div>
+                <div class="photo-frame" style="height:205px; margin-bottom:14px;">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Nh%C3%A0_%C4%91i%E1%BB%81u_h%C3%A0nh_%C4%90%E1%BA%A1i_h%E1%BB%8Dc_Qu%E1%BB%91c_Gia_TPHCM.jpg"
+                       alt="Nhà điều hành Đại học Quốc gia Thành phố Hồ Chí Minh"
+                       onerror="this.style.display='none';" />
+                  <div class="photo-badge" style="padding:6px 12px;">
+                    <strong>ĐHQG TP.HCM &amp; Giáo dục</strong>
+                  </div>
+                </div>
+                <span class="status-pill planned" style="font-size:14.5px; padding:5px 12px;">Thành phố Học tập UNESCO</span>
+                <h3 style="margin:10px 0; font-size:25px;">1. Giáo dục Mũi nhọn</h3>
+                <ul class="clean-list" style="gap:12px;">
+                  <li style="font-size:22px; line-height:1.48;"><strong>99,86% tốt nghiệp THPT</strong> (2024–2025), dẫn đầu Tiếng Anh và Tin học.</li>
+                  <li style="font-size:22px; line-height:1.48;"><strong>166/236 giải HSG Quốc gia</strong>; tiên phong đưa AI, STEM vào trường học.</li>
+                </ul>
+              </div>
+              <div style="background:#f1f5f9; padding:11px 14px; border-radius:8px; font-size:18px; font-weight:700; color:var(--primary-navy);">
+                300 phòng học / 10.000 dân trong độ tuổi
+              </div>
+            </div>
+
+            <!-- Cột 2: Y tế -->
+            <div class="card accent-top-teal anim-item delay-2" style="padding:18px 20px;">
+              <div>
+                <div class="photo-frame" style="height:205px; margin-bottom:14px;">
+                  <img src="https://bvndtp.org.vn/wp-content/uploads/2017/10/image2-5.jpg"
+                       alt="Bệnh viện Nhi đồng Thành phố – Cụm y tế kỹ thuật cao cửa ngõ"
+                       onerror="this.style.display='none';" />
+                  <div class="photo-badge" style="padding:6px 12px;">
+                    <strong>BV Nhi đồng Thành phố</strong>
+                  </div>
+                </div>
+                <span class="status-pill completed" style="font-size:14.5px; padding:5px 12px;">Trung tâm Y tế ASEAN</span>
+                <h3 style="margin:10px 0; font-size:25px;">2. Y tế Thông minh</h3>
+                <ul class="clean-list" style="gap:12px;">
+                  <li style="font-size:22px; line-height:1.48;">Gần <strong>400.000 hồ sơ sức khỏe điện tử</strong> (4/2025), khám định kỳ đạt ~54% (11/2026).</li>
+                  <li style="font-size:22px; line-height:1.48;">Phát huy BV Ung Bướu CS2, BV Nhi đồng TP và y tế cơ sở.</li>
+                </ul>
+              </div>
+              <div style="background:#f0fdf4; padding:11px 14px; border-radius:8px; font-size:18px; font-weight:700; color:#166534;">
+                Làm chủ kỹ thuật ghép tạng, can thiệp bào thai
+              </div>
+            </div>
+
+            <!-- Cột 3: An sinh & Giảm nghèo -->
+            <div class="card accent-top-red anim-item delay-3" style="padding:18px 20px; background:#fffbeb;">
+              <div>
+                <div class="photo-frame" style="height:205px; margin-bottom:14px;">
+                  <img src="https://ilotusland.com/wp-content/uploads/2024/03/kenh-nhieu-loc-thi-nghe-truoc-day.jpg"
+                       alt="Cảnh quan đô thị xanh sạch đẹp ven kênh Nhiêu Lộc - Thị Nghè TP.HCM"
+                       onerror="this.style.display='none';" />
+                  <div class="photo-badge" style="padding:6px 12px;">
+                    <strong>Không gian sống nhân văn, xanh sạch</strong>
+                  </div>
+                </div>
+                <span class="status-pill under-construction" style="font-size:14.5px; padding:5px 12px;">Vượt trước hạn 2 năm</span>
+                <h3 style="margin:10px 0; font-size:25px;">3. Giảm nghèo Bền vững</h3>
+                <ul class="clean-list" style="gap:12px;">
+                  <li style="font-size:22px; line-height:1.48;">Từ cuối 2022 <strong>không còn hộ nghèo theo chuẩn quốc gia</strong>.</li>
+                  <li style="font-size:22px; line-height:1.48;">Chuẩn nghèo TP 2026–2030 cao gấp 2 lần cả nước; tạo <strong>300.000 việc làm/năm</strong>.</li>
+                </ul>
+              </div>
+              <div style="background:#fef2f2; padding:11px 14px; border-radius:8px; font-size:18px; font-weight:700; color:#991b1b;">
+                Tỷ lệ hộ nghèo chuẩn TP giữ dưới 0,5%
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 15: PHẦN IV – MỤC 4.1: SIÊU ĐÔ THỊ MỚI 01/07/2025 (THÊM ẢNH BÌNH DƯƠNG & CÁI MÉP)
+           ====================================================================== -->
+      <section class="slide" data-index="15" data-transition="zoom" data-title="4.1. Siêu đô thị TP.HCM mới từ 01/07/2025" data-part="Phần IV">
+        <header class="slide-header anim-item delay-1">
+          <div class="slide-header-left">
+            <div class="section-kicker"><span class="dot"></span> PHẦN IV – MỤC 4.1 • BƯỚC NGOẶT LỊCH SỬ TỔ CHỨC KHÔNG GIAN PHÁT TRIỂN</div>
+            <h2 class="slide-title">4.1. Cột mốc 01/07/2025: Siêu đô thị TP.HCM Mới (&gt;14 Triệu Dân)</h2>
+            <p class="slide-subtitle">Theo Nghị quyết 202/2025/QH15: Hợp nhất TP.HCM, Bình Dương và Bà Rịa – Vũng Tàu</p>
+          </div>
+        </header>
+
+        <div class="slide-body">
+          <div class="grid-12">
+            <!-- Cột trái (5 phần): Bản đồ Việt Nam -->
+            <div class="col-5 anim-item delay-2">
+              <div class="card accent-top-red" style="height:100%; background:linear-gradient(180deg,#0f2547 0%,#0b192c 100%); color:#ffffff; padding:16px 18px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <span style="font-size:14px; font-weight:800; color:#ffcd00; text-transform:uppercase;">Vị thế Địa chiến lược</span>
+                  <span class="vn-flag-badge" style="padding:3px 10px; font-size:13px;">
+                    <svg class="vn-flag-svg" style="width:20px; height:14px;"><use href="#vn-flag-symbol"></use></svg>
+                    Chủ quyền Việt Nam
+                  </span>
+                </div>
+
+                <div style="flex:1; display:flex; align-items:center; justify-content:center; position:relative; min-height:0;">
+                  <svg viewBox="0 0 500 350" style="width:100%; height:100%;">
+                    <rect x="0" y="0" width="500" height="350" rx="12" fill="#0c2d48" stroke="rgba(255,255,255,0.15)"/>
+                    <path d="M115,24 L155,20 L175,40 L162,67 L138,87 L148,120 L182,160 L202,202 L195,248 L162,282 L128,302 L104,326 L88,318 L96,288 L128,265 L160,232 L166,188 L138,142 L114,98 L102,58 Z"
+                          fill="#1e40af" stroke="#60a5fa" stroke-width="2" />
+                    <circle cx="145" cy="274" r="24" fill="rgba(218,37,29,0.32)"/>
+                    <circle cx="145" cy="274" r="13" fill="#da251d" stroke="#ffcd00" stroke-width="2.2"/>
+                    <polygon fill="#ffcd00" points="145,266 146.8,271.5 152.5,271.5 147.9,274.9 149.6,280.4 145,277 140.4,280.4 142.1,274.9 137.5,271.5 143.2,271.5"/>
+
+                    <g transform="translate(260, 140)">
+                      <circle cx="0" cy="0" r="4" fill="#ffcd00"/>
+                      <circle cx="10" cy="4" r="3" fill="#ffcd00"/>
+                      <circle cx="-8" cy="6" r="2.5" fill="#ffcd00"/>
+                      <rect x="-48" y="-25" width="150" height="21" rx="5" fill="rgba(218,37,29,0.9)" stroke="#ffcd00" stroke-width="1"/>
+                      <text x="27" y="-11" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">QĐ. HOÀNG SA (VN)</text>
+                    </g>
+
+                    <g transform="translate(290, 265)">
+                      <circle cx="0" cy="0" r="4" fill="#ffcd00"/>
+                      <circle cx="12" cy="-5" r="3" fill="#ffcd00"/>
+                      <circle cx="8" cy="8" r="3" fill="#ffcd00"/>
+                      <circle cx="-10" cy="5" r="2.5" fill="#ffcd00"/>
+                      <rect x="-52" y="13" width="156" height="21" rx="5" fill="rgba(218,37,29,0.9)" stroke="#ffcd00" stroke-width="1"/>
+                      <text x="26" y="27" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">QĐ. TRƯỜNG SA (VN)</text>
+                    </g>
+
+                    <g transform="translate(222, 22)">
+                      <rect x="0" y="0" width="260" height="92" rx="9" fill="rgba(15,37,71,0.92)" stroke="#38bdf8" stroke-width="1.5"/>
+                      <text x="12" y="22" font-size="12.5" font-weight="800" fill="#ffcd00">SIÊU ĐÔ THỊ TP.HCM (01/07/2025)</text>
+                      <text x="12" y="42" font-size="12" fill="#e2e8f0">• Lõi Tài chính &amp; KHCN (TP.HCM cũ)</text>
+                      <text x="12" y="61" font-size="12" fill="#e2e8f0">• Thủ phủ Công nghiệp (Bình Dương)</text>
+                      <text x="12" y="80" font-size="12" fill="#e2e8f0">• Cảng biển &amp; Dầu khí (BR-VT)</text>
+                    </g>
+                    <line x1="157" y1="268" x2="222" y2="88" stroke="#ffcd00" stroke-width="1.5" stroke-dasharray="4 3"/>
+                  </svg>
+                </div>
+
+                <div style="font-size:15px; color:#cbd5e1; text-align:center; margin-top:4px;">
+                  Không gian liên hoàn từ thủ phủ công nghiệp đến Biển Đông
+                </div>
+              </div>
+            </div>
+
+            <!-- Cột phải (7 phần): 3 KPI + 3 Cực cộng hưởng kèm ảnh -->
+            <div class="col-7 anim-item delay-3" style="display:flex; flex-direction:column; gap:14px;">
+              <div style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:14px;">
+                <div class="card accent-top-red" style="padding:14px 16px;">
+                  <div style="font-size:14px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Diện tích tự nhiên</div>
+                  <div class="kpi-value red" style="margin:4px 0;">6.772 km²</div>
+                  <p>Tăng hơn 3,2 lần so với trước sáp nhập</p>
+                </div>
+
+                <div class="card accent-top-navy" style="padding:14px 16px;">
+                  <div style="font-size:14px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Quy mô dân số</div>
+                  <div class="kpi-value blue" style="margin:4px 0;">&gt;14,0 Triệu</div>
+                  <p>14.002.598 người – Đông nhất cả nước</p>
+                </div>
+
+                <div class="card accent-top-gold" style="padding:14px 16px;">
+                  <div style="font-size:14px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Đơn vị hành chính</div>
+                  <div class="kpi-value gold" style="margin:4px 0;">168 ĐVHC</div>
+                  <p>Bộ máy tinh gọn từ ngày 01/07/2025</p>
+                </div>
+              </div>
+
+              <div class="card accent-top-teal" style="flex:1; padding:18px 20px;">
+                <h3 style="margin-bottom:12px; font-size:25px;">Sức mạnh Cộng hưởng “3 trong 1”</h3>
+                <div style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:16px; flex:1;">
+                  <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:12px;">
+                    <div class="photo-frame" style="height:165px; flex-shrink:0;">
+                      <img src="https://vnguide.vn/uploads/0000/7/2024/09/09/toa-nha-bitexco-01.jpg" alt="Trung tâm TP.HCM" onerror="this.style.display='none';"/>
+                    </div>
+                    <div style="font-size:19px; font-weight:800; color:var(--accent-red);">1. Lõi Đô thị Trung tâm</div>
+                    <p style="font-size:22px; line-height:1.45;">Tài chính, KHCN SHTP, giáo dục &amp; y tế chuyên sâu.</p>
+                  </div>
+
+                  <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:12px;">
+                    <div class="photo-frame" style="height:165px; flex-shrink:0;">
+                      <img src="https://blog.homenext.vn/hubfs/thanh-pho-moi-binh-duong-1.jpg" alt="Thành phố mới Bình Dương" onerror="this.style.display='none';"/>
+                    </div>
+                    <div style="font-size:19px; font-weight:800; color:var(--primary-blue);">2. Khu vực Bình Dương</div>
+                    <p style="font-size:22px; line-height:1.45;">Thủ phủ công nghiệp thế hệ mới &amp; thu hút FDI.</p>
+                  </div>
+
+                  <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:12px;">
+                    <div class="photo-frame" style="height:165px; flex-shrink:0;">
+                      <img src="https://titangroup.vn/wp-content/uploads/cang-cai-mep-thi-vai-2.jpg" alt="Cảng Cái Mép - Thị Vải" onerror="this.style.display='none';"/>
+                    </div>
+                    <div style="font-size:19px; font-weight:800; color:var(--accent-teal);">3. Bà Rịa – Vũng Tàu</div>
+                    <p style="font-size:22px; line-height:1.45;">Cảng nước sâu Cái Mép, dầu khí &amp; kinh tế biển.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 16: MỤC 4.2 – ĐÁNH GIÁ TỔNG KẾT & ĐỊNH HƯỚNG 2026–2030
+           ====================================================================== -->
+      <section class="slide" data-index="16" data-transition="slide" data-title="4.2. Đánh giá Tổng kết & Định hướng 2026–2030" data-part="Phần IV">
+        <header class="slide-header anim-item delay-1">
+          <div class="slide-header-left">
+            <div class="section-kicker"><span class="dot"></span> PHẦN IV – MỤC 4.2 • NHẬN XÉT, ĐÁNH GIÁ &amp; TẦM NHÌN TƯƠNG LAI</div>
+            <h2 class="slide-title">4.2. Tổng kết Chặng đường 2021 – 2026 &amp; Định hướng 2026 – 2030</h2>
+            <p class="slide-subtitle">Nhìn thẳng vào hạn chế cần tháo gỡ và xác lập mục tiêu tăng trưởng 2 con số giai đoạn mới</p>
+          </div>
+        </header>
+
+        <div class="slide-body">
+          <div class="timeline-track anim-item delay-2" style="margin-bottom:16px;">
+            <div class="timeline-node">
+              <div style="font-size:14px; font-weight:800; color:var(--accent-red);">2021</div>
+              <div style="font-size:20px; font-weight:800; color:var(--primary-navy); margin:2px 0;">Chống dịch</div>
+              <div style="font-size:15px; color:var(--text-secondary);">Thu NS 381.532 tỷ</div>
+            </div>
+            <div class="timeline-node">
+              <div style="font-size:14px; font-weight:800; color:var(--primary-blue);">2022</div>
+              <div style="font-size:20px; font-weight:800; color:var(--primary-navy); margin:2px 0;">GRDP +9,03%</div>
+              <div style="font-size:15px; color:var(--text-secondary);">Khánh thành Cầu Ba Son</div>
+            </div>
+            <div class="timeline-node">
+              <div style="font-size:14px; font-weight:800; color:var(--accent-teal);">2023</div>
+              <div style="font-size:20px; font-weight:800; color:var(--primary-navy); margin:2px 0;">NQ 98/QH15</div>
+              <div style="font-size:15px; color:var(--text-secondary);">Khởi công Vành đai 3</div>
+            </div>
+            <div class="timeline-node">
+              <div style="font-size:14px; font-weight:800; color:var(--accent-emerald);">2024</div>
+              <div style="font-size:20px; font-weight:800; color:var(--primary-navy); margin:2px 0;">&gt;508.553 tỷ</div>
+              <div style="font-size:15px; color:var(--text-secondary);">Chạy Metro số 1 (22/12)</div>
+            </div>
+            <div class="timeline-node highlight">
+              <div style="font-size:14px; font-weight:800; color:var(--accent-gold);">2025</div>
+              <div style="font-size:20px; font-weight:800; color:var(--primary-navy); margin:2px 0;">Siêu đô thị</div>
+              <div style="font-size:15px; color:var(--text-secondary);">Ga T3; NS &gt;800.000 tỷ</div>
+            </div>
+            <div class="timeline-node highlight">
+              <div style="font-size:14px; font-weight:800; color:var(--accent-red);">2026</div>
+              <div style="font-size:20px; font-weight:800; color:var(--primary-navy); margin:2px 0;">9T +9,06%</div>
+              <div style="font-size:15px; color:var(--text-secondary);">Thông xe Vành đai 3</div>
+            </div>
+          </div>
+
+          <div class="grid-12 anim-item delay-3" style="flex:1;">
+            <div class="col-4">
+              <div class="card accent-top-red" style="height:100%; padding:22px 24px;">
+                <div>
+                  <span class="status-pill under-construction" style="font-size:15px; padding:5px 12px;">Nhìn nhận khách quan</span>
+                  <h3 style="margin:12px 0; font-size:26px;">Điểm nghẽn Cần Tháo gỡ</h3>
+                  <ul class="clean-list" style="gap:15px;">
+                    <li style="font-size:23px; line-height:1.48;"><strong>Áp lực giải ngân đầu tư công</strong> cần đạt 100% kế hoạch.</li>
+                    <li style="font-size:23px; line-height:1.48;"><strong>Vướng mắc mặt bằng</strong> tại một số dự án kênh rạch.</li>
+                    <li style="font-size:23px; line-height:1.48;"><strong>Xử lý rác công nghệ mới</strong> (~38%) cần đẩy nhanh tiến độ.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-5">
+              <div class="card accent-top-navy" style="height:100%; background:#f8fafc; padding:22px 24px;">
+                <div>
+                  <span class="status-pill completed" style="font-size:15px; padding:5px 12px;">Nghị quyết HĐND TP.HCM</span>
+                  <h3 style="margin:12px 0; font-size:26px;">Mục tiêu 2026 – 2030</h3>
+                  <ul class="clean-list" style="gap:15px;">
+                    <li style="font-size:23px; line-height:1.48;"><strong>Tăng trưởng GRDP 10 – 11%/năm</strong> giai đoạn 2026–2030.</li>
+                    <li style="font-size:23px; line-height:1.48;"><strong>Huy động &gt;1,2 triệu tỷ đồng</strong> vốn đầu tư phát triển (~35% GRDP).</li>
+                    <li style="font-size:23px; line-height:1.48;"><strong>Quy hoạch 2025–2050:</strong> Di dời hơn 11.800 căn nhà ven kênh rạch.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-3">
+              <div class="photo-frame" style="height:100%;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f5/Ben_Thanh%2C_Ciudad_Ho_Chi_Minh%2C_Vietnam%2C_2013-08-14%2C_DD_01.JPG"
+                     alt="Biểu tượng Chợ Bến Thành tại trung tâm Thành phố Hồ Chí Minh"
+                     onerror="this.style.display='none';" />
+                <div class="photo-badge">
+                  <strong>Chợ Bến Thành</strong>
+                  Giao điểm truyền thống &amp; Ga ngầm Metro số 1
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           SLIDE 17: KẾT LUẬN & CẢM ƠN
+           ====================================================================== -->
+      <section class="slide" data-index="17" data-transition="zoom" data-title="Kết luận & Nguồn tham khảo" data-part="Kết thúc" style="padding:0; background:#071120; color:#ffffff;">
+        <svg class="dong-son-watermark dark-bg" style="right: -100px; bottom: -100px; color: #ffcd00;"><use href="#dong-son-symbol"></use></svg>
+
+        <div style="position:relative; z-index:5; display:grid; grid-template-columns: 4.6fr 7.4fr; height:100%; width:100%;">
+          <div class="anim-item delay-1" style="position:relative; height:100%; overflow:hidden; min-width:0;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/20190923_Independence_Palace-10.jpg"
+                 alt="Hội trường Thống Nhất (Dinh Độc Lập) tại Thành phố Hồ Chí Minh"
+                 onerror="this.style.display='none';"
+                 style="width:100%; height:100%; object-fit:cover; object-position:center;" />
+            <div style="position:absolute; inset:0; background:linear-gradient(270deg, #071120 0%, rgba(7,17,32,0.2) 45%, rgba(7,17,32,0.2) 100%);"></div>
+            <div class="photo-badge" style="bottom:28px; left:24px; right:24px;">
+              <strong>Hội trường Thống Nhất (Dinh Độc Lập)</strong>
+              Biểu tượng lịch sử 50 năm Thống nhất đất nước (30/4/1975 – 30/4/2025)
+            </div>
+          </div>
+
+          <div style="padding: 50px 58px 42px 40px; display:flex; flex-direction:column; justify-content:space-between; min-width:0;">
+            <div class="anim-item delay-1" style="display:flex; align-items:center; justify-content:space-between;">
+              <span class="vn-flag-badge" style="background:rgba(255,255,255,0.12); color:#fff; border-color:rgba(255,205,0,0.4);">
+                <svg class="vn-flag-svg"><use href="#vn-flag-symbol"></use></svg>
+                TỔNG KẾT BÀI THUYẾT TRÌNH • NHÓM 7 – 12A3
+              </span>
+            </div>
+
+            <div class="anim-item delay-2">
+              <h2 style="font-family:var(--font-serif); font-size:42px; font-weight:800; line-height:1.18; color:#ffffff; margin-bottom:14px;">
+                TP. Hồ Chí Minh 2021 – 2026:<br/>
+                <span style="color:#ffcd00;">Bản lĩnh Đầu tàu – Vươn tầm Siêu đô thị</span>
+              </h2>
+              <p style="font-size:24px; line-height:1.58; color:#cbd5e1;">
+                Giai đoạn 2021 – 2026 đã chứng minh sức sống mãnh liệt, tinh thần năng động và sáng tạo của Thành phố Hồ Chí Minh. Từ vượt qua đại dịch đến hoàn thiện hạ tầng và hợp nhất không gian mới, Thành phố vững vàng bước vào kỷ nguyên vươn mình của dân tộc.
+              </p>
+            </div>
+
+            <div class="anim-item delay-3" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:12px; padding:20px 24px;">
+              <div style="font-size:16px; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.07em; margin-bottom:12px;">
+                Hệ thống Nguồn Tài liệu Chính thống Đã Kiểm chứng
+              </div>
+              <div style="display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:10px 18px; font-size:19px; color:#e2e8f0;">
+                <div>1. <a href="http://hdnd.hochiminhcity.gov.vn/tin-tuc/tin-tong-hop/kinh-te-tp-hcm-tang-truong-9-06-trong-9-thang-cao-nhat-10-nam-qua" target="_blank" rel="noopener" style="color:#93c5fd;">Cổng TTĐT HĐND TP.HCM</a></div>
+                <div>2. <a href="https://tphcm.chinhphu.vn/nghi-quyet-98-2023-qh15-diem-nhan-dinh-hinh-nhiem-ky-cu-tao-the-cho-giai-doan-moi-101251010102614693.htm" target="_blank" rel="noopener" style="color:#93c5fd;">Chuyên trang TP.HCM – Chính phủ</a></div>
+                <div>3. <a href="https://hcmcpv.org.vn/tin-tuc/thanh-pho-ho-chi-minh-thu-ngan-sach-dan-dau-ca-nuoc-vuot-moc-800-000-ty-dong-1491941395" target="_blank" rel="noopener" style="color:#93c5fd;">Trang tin Đảng bộ TP.HCM</a></div>
+                <div>4. <a href="https://vtv.vn/chinh-thuc-hop-nhat-tp-ho-chi-minh-binh-duong-va-ba-ria-vung-tau-thanh-tp-ho-chi-minh-moi-100250630113950519.htm" target="_blank" rel="noopener" style="color:#93c5fd;">Đài Truyền hình Việt Nam VTV</a></div>
+                <div>5. <a href="https://nhandan.vn/thanh-pho-ho-chi-minh-khanh-thanh-tuyen-metro-so-1-post864021.html" target="_blank" rel="noopener" style="color:#93c5fd;">Báo Nhân Dân (Metro &amp; T3)</a></div>
+                <div>6. <a href="https://tapchikinhtetaichinh.vn/tp-ho-chi-minh-huong-toi-khong-con-ho-ngheo-theo-chuan-quoc-gia-vao-nam-2030-158560.html" target="_blank" rel="noopener" style="color:#93c5fd;">Tạp chí Kinh tế Tài chính</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ======================================================================
+           SLIDE 18: LỜI CẢM ƠN RIÊNG
+           ====================================================================== -->
+      <section class="slide" data-index="18" data-transition="zoom" data-title="Lời cảm ơn – Nhóm 7 – 12A3" data-part="Kết thúc" style="padding:0; background:radial-gradient(circle at 50% 35%, #172554 0%, #0b192c 55%, #050a14 100%); color:#ffffff;">
+        <canvas id="thanks-particles" width="1600" height="900" style="position:absolute; inset:0; z-index:1; pointer-events:none;"></canvas>
+        <svg class="dong-son-watermark dark-bg" style="left: 50%; top: 50%; transform: translate(-50%, -50%); width: 680px; height: 680px; color: #ffcd00; opacity: 0.06;"><use href="#dong-son-symbol"></use></svg>
+
+        <div style="position:relative; z-index:5; height:100%; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 60px 80px; gap: 28px;">
+          <div class="anim-item delay-1">
+            <span class="vn-flag-badge" style="background:rgba(255,255,255,0.12); color:#fff; border-color:rgba(255,205,0,0.45); padding:8px 18px; font-size:15px;">
+              <svg class="vn-flag-svg"><use href="#vn-flag-symbol"></use></svg>
+              CHUYÊN ĐỀ GDDP 12A3
+            </span>
+          </div>
+
+          <div class="anim-item delay-2" style="max-width:1180px;">
+            <h2 style="font-family:var(--font-serif); font-size:62px; font-weight:800; line-height:1.22; color:#ffcd00; text-shadow: 0 6px 28px rgba(0,0,0,0.45); letter-spacing:0.01em;">
+              TRÂN TRỌNG CẢM ƠN THẦY CÔ<br/>VÀ CÁC BẠN ĐÃ LẮNG NGHE!
+            </h2>
+          </div>
+
+          <div class="anim-item delay-3" style="background:rgba(255,255,255,0.08); backdrop-filter:blur(12px); border:1px solid rgba(255,205,0,0.4); padding:16px 40px; border-radius:999px; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+            <span style="font-size:28px; font-weight:800; color:#ffffff; letter-spacing:0.04em;">NHÓM 7 – LỚP 12A3</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT ĐIỀU KHIỂN TRÌNH CHIẾU & HIỆU ỨNG SÂN KHẤU THÀNH VIÊN
+       ========================================================================== -->
+  <script>
+    (function() {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const totalSlides = slides.length;
+      let currentIndex = 0;
+      let idleTimer = null;
+      let spotlightTimer = null;
+
+      const wrapper = document.getElementById('viewport-wrapper');
+      const stage = document.getElementById('presentation-stage');
+      const counterEl = document.getElementById('slide-counter');
+      const progressFill = document.getElementById('progress-bar-fill');
+      const btnPrev = document.getElementById('btn-prev');
+      const btnNext = document.getElementById('btn-next');
+      const btnOverview = document.getElementById('btn-overview');
+      const btnCloseOverview = document.getElementById('btn-close-overview');
+      const btnFullscreen = document.getElementById('btn-fullscreen');
+      const overviewModal = document.getElementById('overview-modal');
+      const overviewGrid = document.getElementById('overview-grid-container');
+
+      /* 1. Co giãn khung chiếu chuẩn 16:9 (1600x900) */
+      function resizeStage() {
+        const vw = wrapper.clientWidth || document.documentElement.clientWidth || window.innerWidth;
+        const vh = wrapper.clientHeight || document.documentElement.clientHeight || window.innerHeight;
+        const availW = Math.max(vw - 28, 320);
+        const availH = Math.max(vh - 28, 200);
+        const scale = Math.min(availW / 1600, availH / 900);
+        stage.style.transform = 'translate(-50%, -50%) scale(' + scale.toFixed(4) + ')';
+      }
+      window.addEventListener('resize', resizeStage);
+      if (window.ResizeObserver) {
+        new ResizeObserver(resizeStage).observe(wrapper);
+      }
+      resizeStage();
+
+      /* 2. Danh mục Slide Overview */
+      function buildOverviewGrid() {
+        overviewGrid.innerHTML = '';
+        slides.forEach(function(slide, idx) {
+          const item = document.createElement('button');
+          item.className = 'overview-item' + (idx === currentIndex ? ' active-thumb' : '');
+          const numStr = String(idx + 1).padStart(2, '0');
+          const title = slide.getAttribute('data-title') || ('Slide ' + numStr);
+          const part = slide.getAttribute('data-part') || '';
+          item.innerHTML =
+            '<div class="num">SLIDE ' + numStr + ' / ' + totalSlides + '</div>' +
+            '<div class="ttl">' + title + '</div>' +
+            '<div class="part">' + part + '</div>';
+          item.addEventListener('click', function() {
+            goToSlide(idx);
+            closeOverview();
+          });
+          overviewGrid.appendChild(item);
+        });
+      }
+
+      /* 3. Chuyển Slide */
+      window.goToSlide = function(targetIndex) {
+        if (targetIndex < 0) targetIndex = 0;
+        if (targetIndex >= totalSlides) targetIndex = totalSlides - 1;
+        currentIndex = targetIndex;
+
+        slides.forEach(function(sl, idx) {
+          sl.classList.remove('active', 'prev-slide', 'next-slide');
+          if (idx === currentIndex) {
+            sl.classList.add('active');
+          } else if (idx < currentIndex) {
+            sl.classList.add('prev-slide');
+          } else {
+            sl.classList.add('next-slide');
+          }
+        });
+
+        const numStr = String(currentIndex + 1).padStart(2, '0');
+        counterEl.textContent = numStr + ' / ' + String(totalSlides).padStart(2, '0');
+        progressFill.style.width = (((currentIndex + 1) / totalSlides) * 100).toFixed(2) + '%';
+
+        const thumbs = overviewGrid.querySelectorAll('.overview-item');
+        thumbs.forEach(function(t, i) {
+          t.classList.toggle('active-thumb', i === currentIndex);
+        });
+      };
+
+      function nextSlide() {
+        if (currentIndex < totalSlides - 1) goToSlide(currentIndex + 1);
+      }
+      function prevSlide() {
+        if (currentIndex > 0) goToSlide(currentIndex - 1);
+      }
+
+      btnPrev.addEventListener('click', prevSlide);
+      btnNext.addEventListener('click', nextSlide);
+
+      function openOverview() {
+        buildOverviewGrid();
+        overviewModal.classList.add('open');
+        overviewModal.setAttribute('aria-hidden', 'false');
+      }
+      function closeOverview() {
+        overviewModal.classList.remove('open');
+        overviewModal.setAttribute('aria-hidden', 'true');
+      }
+      btnOverview.addEventListener('click', openOverview);
+      btnCloseOverview.addEventListener('click', closeOverview);
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(function() {});
+        } else {
+          document.exitFullscreen().catch(function() {});
+        }
+      }
+      btnFullscreen.addEventListener('click', toggleFullscreen);
+
+      document.addEventListener('fullscreenchange', function() {
+        if (document.fullscreenElement) {
+          document.body.classList.add('is-fullscreen');
+          btnFullscreen.textContent = '✕ Thoát trình chiếu';
+        } else {
+          document.body.classList.remove('is-fullscreen');
+          btnFullscreen.textContent = '▶ Trình Chiếu';
+          document.body.classList.remove('fullscreen-idle');
+        }
+        setTimeout(resizeStage, 60);
+      });
+
+      document.addEventListener('mousemove', function() {
+        document.body.classList.remove('fullscreen-idle');
+        if (idleTimer) clearTimeout(idleTimer);
+        if (document.fullscreenElement) {
+          idleTimer = setTimeout(function() {
+            document.body.classList.add('fullscreen-idle');
+          }, 2200);
+        }
+      });
+
+      document.addEventListener('keydown', function(e) {
+        const activeTag = document.activeElement;
+        if (activeTag && activeTag.getAttribute('contenteditable') === 'true') {
+          if (e.key === 'Escape') activeTag.blur();
+          return;
+        }
+        if (overviewModal.classList.contains('open')) {
+          if (e.key === 'Escape') closeOverview();
+          return;
+        }
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+          e.preventDefault();
+          nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          prevSlide();
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          goToSlide(0);
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          goToSlide(totalSlides - 1);
+        } else if (e.key === 'f' || e.key === 'F') {
+          e.preventDefault();
+          toggleFullscreen();
+        } else if (e.key === 'g' || e.key === 'G') {
+          e.preventDefault();
+          openOverview();
+        }
+      });
+
+      let touchStartX = 0;
+      let touchStartY = 0;
+      document.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 1) {
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+        }
+      }, { passive: true });
+      document.addEventListener('touchend', function(e) {
+        if (e.changedTouches.length === 1) {
+          const dx = e.changedTouches[0].clientX - touchStartX;
+          const dy = e.changedTouches[0].clientY - touchStartY;
+          if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)) {
+            if (dx < 0) nextSlide();
+            else prevSlide();
+          }
+        }
+      }, { passive: true });
+
+      /* 4. Tương tác Biểu đồ Thu Ngân sách (Slide 7) */
+      window.switchBudgetView = function(mode) {
+        const btnActual = document.getElementById('btn-budget-actual');
+        const btnPct = document.getElementById('btn-budget-pct');
+        btnActual.classList.toggle('active', mode === 'actual');
+        btnPct.classList.toggle('active', mode === 'pct');
+
+        const dataActual = [
+          { id: '2021', h: '46%', val: '381.532' },
+          { id: '2022', h: '57%', val: '471.562' },
+          { id: '2023', h: '54%', val: '~446.500' },
+          { id: '2024', h: '62%', val: '508.553' },
+          { id: '2025', h: '92%', val: '>800.000' },
+          { id: '2026', h: '88%', val: '767.000 (10T)' }
+        ];
+        const dataPct = [
+          { id: '2021', h: '76%', val: '104,56% DT' },
+          { id: '2022', h: '88%', val: '122,0% DT' },
+          { id: '2023', h: '68%', val: '>95,0% DT' },
+          { id: '2024', h: '78%', val: '105,32% DT' },
+          { id: '2025', h: '85%', val: '111,4% DT' },
+          { id: '2026', h: '72%', val: '95,5% (10T)' }
+        ];
+
+        const activeSet = mode === 'actual' ? dataActual : dataPct;
+        activeSet.forEach(function(item) {
+          const bar = document.getElementById('bar-' + item.id);
+          const val = document.getElementById('val-' + item.id);
+          if (bar && val) {
+            bar.style.height = item.h;
+            val.textContent = item.val;
+          }
+        });
+      };
+
+      /* 5. Bộ lọc Trạng thái Dự án (Slide 11) */
+      window.filterProjects = function(filter, btnEl) {
+        const parent = btnEl.parentElement;
+        parent.querySelectorAll('.tab-btn').forEach(function(b) {
+          b.classList.remove('active');
+        });
+        btnEl.classList.add('active');
+
+        const cards = document.querySelectorAll('#project-cards-grid .project-item');
+        cards.forEach(function(card) {
+          const st = card.getAttribute('data-status');
+          if (filter === 'all' || st === filter) {
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+          } else {
+            card.style.opacity = '0.28';
+            card.style.transform = 'scale(0.97)';
+          }
+        });
+      };
+
+      /* 6. Hiệu ứng Spotlight Thành viên Nhóm 7 (Slide 2) */
+      window.highlightSingleMember = function(cardEl) {
+        if (spotlightTimer) {
+          clearInterval(spotlightTimer);
+          spotlightTimer = null;
+        }
+        const wasActive = cardEl.classList.contains('spotlight');
+        document.querySelectorAll('.member-card').forEach(function(c) {
+          c.classList.remove('spotlight');
+        });
+        if (!wasActive) {
+          cardEl.classList.add('spotlight');
+        }
+      };
+
+      window.runMemberSpotlight = function() {
+        if (spotlightTimer) {
+          clearInterval(spotlightTimer);
+          spotlightTimer = null;
+        }
+        const cards = Array.from(document.querySelectorAll('.member-card'));
+        let idx = 0;
+        cards.forEach(function(c) { c.classList.remove('spotlight'); });
+        if (cards.length === 0) return;
+
+        cards[0].classList.add('spotlight');
+        spotlightTimer = setInterval(function() {
+          cards.forEach(function(c) { c.classList.remove('spotlight'); });
+          idx++;
+          if (idx >= cards.length) {
+            clearInterval(spotlightTimer);
+            spotlightTimer = null;
+            return;
+          }
+          cards[idx].classList.add('spotlight');
+        }, 700);
+      };
+
+      /* 7. Hạt sáng Ambient Particles cho Slide 1 & Slide 2 */
+      function initParticles(canvasId, slideIdx, colorRgba) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas || !canvas.getContext) return;
+        const ctx = canvas.getContext('2d');
+        const particles = [];
+        for (let i = 0; i < 38; i++) {
+          particles.push({
+            x: Math.random() * 1600,
+            y: Math.random() * 900,
+            r: Math.random() * 2.4 + 0.8,
+            vx: (Math.random() - 0.5) * 0.35,
+            vy: (Math.random() - 0.5) * 0.35,
+            alpha: Math.random() * 0.55 + 0.15
+          });
+        }
+        function draw() {
+          if (currentIndex === slideIdx) {
+            ctx.clearRect(0, 0, 1600, 900);
+            particles.forEach(function(p) {
+              p.x += p.vx;
+              p.y += p.vy;
+              if (p.x < 0) p.x = 1600;
+              if (p.x > 1600) p.x = 0;
+              if (p.y < 0) p.y = 900;
+              if (p.y > 900) p.y = 0;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+              ctx.fillStyle = colorRgba + p.alpha + ')';
+              ctx.fill();
+            });
+          }
+          requestAnimationFrame(draw);
+        }
+        requestAnimationFrame(draw);
+      }
+      initParticles('cover-particles', 0, 'rgba(255, 205, 0, ');
+      initParticles('member-particles', 1, 'rgba(56, 189, 248, ');
+      initParticles('thanks-particles', 18, 'rgba(255, 205, 0, ');
+
+      buildOverviewGrid();
+      goToSlide(0);
+    })();
+  </script>
+</body>
+</html>
